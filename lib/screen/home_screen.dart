@@ -1,6 +1,9 @@
+import 'package:aula/screen/calendar_screen.dart';
 import 'package:aula/screen/chat.dart';
 import 'package:aula/screen/home_course_list.dart';
 import 'package:aula/screen/notif.dart';
+import 'package:aula/screen/setting_screen.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
@@ -43,9 +46,17 @@ class _HomeScreenState extends State<HomeScreen>
     var width = MediaQuery.of(context).size.width * 0.78;
     return Material(
       color: Colors.blueAccent,
-      child: GestureDetector(
-        child: Stack(children: [
+      child: Scaffold(
+        endDrawer: Drawer(),
+        body: Stack(children: [
           Container(
+            color: Colors.deepPurple,
+            child: FlareActor(
+              'res/cloud.flr',
+              fit: BoxFit.cover,
+              animation: 'move',
+              // color: Colors.yellow,
+            ),
             width: double.infinity,
             height: double.infinity,
           ),
@@ -62,22 +73,31 @@ class _HomeScreenState extends State<HomeScreen>
               ),
             ),
             child: Scaffold(
-              // drawer: Drawer(child: Container()),
               appBar: AppBar(
-                backgroundColor: Colors.blueGrey[200],
-                leading: IconButton(
-                    icon: Icon(Icons.menu),
-                    onPressed: () {
-                      if (acont.status == AnimationStatus.completed) {
-                        setState(() {
-                          acont.reverse();
-                        });
-                      } else {
-                        setState(() {
-                          acont.forward();
-                        });
-                      }
-                    }),
+                backgroundColor: Colors.blue,
+                leading: InkWell(
+                  onTap: () {
+                    if (acont.status == AnimationStatus.completed) {
+                      setState(() {
+                        acont.reverse();
+                      });
+                    } else {
+                      setState(() {
+                        acont.forward();
+                      });
+                    }
+                  },
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(Icons.menu),
+                      Text(
+                        'Menu',
+                        textScaleFactor: 0.6,
+                      ),
+                    ],
+                  ),
+                ),
                 title: Text('Home'),
                 actions: <Widget>[
                   Stack(
@@ -121,7 +141,6 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ],
               ),
-
               body: Stack(
                 children: <Widget>[
                   Container(
@@ -186,29 +205,59 @@ class SideBar extends StatelessWidget {
     var width = MediaQuery.of(context).size.width * 0.78;
     return Container(
       height: double.infinity,
-      color: Color.fromRGBO(245, 245, 250, 0.95),
       width: width,
-      child: SafeArea(
-        child: ListView(
-          children: <Widget>[
-            ListTile(
-              onTap: () {
-                // rotate();
-                if (animationController.status == AnimationStatus.completed) {
-                  animationController.reverse();
-                } else {
-                  animationController.forward();
-                }
-              },
-              title: Text('Close Sidebar'),
-            ),
-            ListTile(
-              title: Text('Calendar'),
-            ),
-            ListTile(
-              title: Text('Log me out!!'),
-            )
-          ],
+      padding: EdgeInsets.only(left: 8),
+      color: Color.fromRGBO(245, 245, 250, 0.99),
+      child: Center(
+        child: Builder(
+          builder: (context) => ListView(
+            shrinkWrap: true,
+            children: <Widget>[
+              ListTile(
+                onTap: () {
+                  // rotate();
+                  if (animationController.status == AnimationStatus.completed) {
+                    animationController.reverse();
+                  } else {
+                    animationController.forward();
+                  }
+                },
+                leading: Icon(Icons.close),
+                title: Text('Close Sidebar'),
+              ),
+              ListTile(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (context) => CalendarScreen()));
+                },
+                leading: Icon(Icons.calendar_today),
+                title: Text('Calendar'),
+              ),
+              ListTile(
+                onTap: () {
+                  Scaffold.of(context).openEndDrawer();
+                },
+                leading: Icon(Icons.account_circle),
+                title: Text('Online Users'),
+              ),
+              ListTile(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (context) => SettingScreen()));
+                },
+                leading: Icon(Icons.settings),
+                title: Text('App Settings'),
+              ),
+              ListTile(
+                leading: Icon(Icons.settings_power),
+                title: Text('Log me out!!'),
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -25,7 +25,7 @@ class _CourseListHomeState extends State<CourseListHome> {
     },
   ];
   List menuStatus = [];
-  var scrollValue = 0.0;
+  var scrollValue = 0.0, viewControlloffset = 116.0;
   ScrollController scrollController;
   @override
   void initState() {
@@ -34,6 +34,12 @@ class _CourseListHomeState extends State<CourseListHome> {
         if (scrollController.offset >= -50 && scrollController.offset <= 180) {
           setState(() {
             scrollValue = scrollController.offset;
+          });
+        }
+        if (scrollController.offset >= 116) {
+          // print(viewControlloffset);
+          setState(() {
+            viewControlloffset = scrollController.offset;
           });
         }
       });
@@ -65,16 +71,17 @@ class _CourseListHomeState extends State<CourseListHome> {
           alignment: Alignment.center,
           children: [
             StackSize(),
-            Positioned(top: 18 - (scrollValue * 0.3), child: UserDetailsCard()),
+            Positioned(top: 12 - (scrollValue * 0.3), child: UserDetailsCard()),
             Positioned.directional(
               textDirection: TextDirection.ltr,
-              top: 120,
+              top: 172,
               child: Container(
                 padding: EdgeInsets.zero,
                 width: size.width,
                 child: Grids(),
               ),
             ),
+            Positioned(top: (viewControlloffset), child: ViewControl()),
           ],
         ),
       ),
@@ -89,7 +96,7 @@ class StackSize extends StatelessWidget {
     return BlocBuilder<CardlistBloc, CardlistState>(
       builder: (context, state) {
         if (state is Loaded) {
-          double heights = state.cardSize * (state.data.length + 1);
+          double heights = state.cardSize * (state.data.length + 2);
           return Container(
             width: size.width,
             height: size.height > heights ? size.height - 80 : heights,
@@ -338,20 +345,35 @@ class CourseCard extends StatelessWidget {
                                     top: Radius.circular(16))),
                           ),
                           Positioned(
-                              // top: 0,
-                              right: 0,
-                              child: Material(
-                                color: Colors.transparent,
-                                child: IconButton(
-                                  onPressed: () {
-                                    context
-                                        .bloc<CardlistBloc>()
-                                        .add(OpenCard(index));
-                                  },
-                                  icon: Icon(
-                                    Icons.more_vert,
-                                    color: Colors.white,
-                                  ),
+                            // top: 0,
+                            right: 0,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: IconButton(
+                                onPressed: () {
+                                  context
+                                      .bloc<CardlistBloc>()
+                                      .add(OpenCard(index));
+                                },
+                                icon: Icon(
+                                  Icons.more_vert,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                              left: 8,
+                              bottom: 8,
+                              child: Text(
+                                'Fisika (S1)',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      blurRadius: 8,
+                                    ),
+                                  ],
                                 ),
                               ))
                         ]),
@@ -385,5 +407,28 @@ class CourseCard extends StatelessWidget {
         );
       }
     });
+  }
+}
+
+class ViewControl extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8),
+      color: Colors.grey[350],
+      width: size.width,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          DropdownButton(items: [
+            DropdownMenuItem(child: Text('Filter')),
+          ], onChanged: (value) {}),
+          DropdownButton(items: [
+            DropdownMenuItem(child: Text('Sort')),
+          ], onChanged: (value) {}),
+        ],
+      ),
+    );
   }
 }

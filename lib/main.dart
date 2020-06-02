@@ -16,7 +16,7 @@ void main() {
           AuthenticationBloc(repository: user)..add(AppStarted()),
     ),
     BlocProvider(
-      create: (context) => CardlistBloc()..add(LoadData(3)),
+      create: (context) => CardlistBloc()..add(LoadData(5)),
     ),
   ], child: MyApp()));
 }
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.grey,
+        primarySwatch: Colors.blue,
       ),
       home: LoginScreen(),
     );
