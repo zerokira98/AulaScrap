@@ -4,6 +4,8 @@ import 'package:aula/screen/home_course_list.dart';
 import 'package:aula/screen/notif.dart';
 import 'package:aula/screen/setting_screen.dart';
 import 'package:flare_flutter/flare_actor.dart';
+// import 'package:flare_flutter/flare_controller.dart';
+import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
@@ -55,7 +57,6 @@ class _HomeScreenState extends State<HomeScreen>
               'res/cloud.flr',
               fit: BoxFit.cover,
               animation: 'move',
-              // color: Colors.yellow,
             ),
             width: double.infinity,
             height: double.infinity,
@@ -98,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen>
                     ],
                   ),
                 ),
-                title: Text('Home'),
+                // title: Text('Home'),
                 actions: <Widget>[
                   Stack(
                     children: <Widget>[
@@ -148,24 +149,25 @@ class _HomeScreenState extends State<HomeScreen>
                     height: MediaQuery.of(context).size.height,
                   ),
                   Container(
-                    child: AnimatedSwitcher(
-                      duration: Duration(milliseconds: 200),
-                      reverseDuration: Duration(milliseconds: 200),
-                      transitionBuilder: (child, noitamina) {
-                        var offsetAnimation = Tween<Offset>(
-                                begin: Offset(0.0, 0.1), end: Offset(0.0, 0.0))
-                            .animate(noitamina);
+                    child: PageTransitionSwitcher(
+                      reverse: true,
+                      duration: Duration(milliseconds: 300),
+                      // reverseDuration: Duration(milliseconds: 200),
+                      transitionBuilder: (child, noitamina, noitamina2) {
+                        // return child;
 
-                        return SlideTransition(
-                          position: offsetAnimation,
-                          child:
-                              FadeTransition(opacity: noitamina, child: child),
+                        return SharedAxisTransition(
+                          transitionType: SharedAxisTransitionType.horizontal,
+                          animation: noitamina,
+                          secondaryAnimation: noitamina2,
+                          child: child,
                         );
+                        // FadeTransition(opacity: noitamina, child: child),
                       },
                       child: acont.status == AnimationStatus.forward ||
                               acont.status == AnimationStatus.reverse
                           ? Container(
-                              color: Colors.transparent,
+                              color: Colors.white,
                               child: Center(
                                 child: Text(''),
                               ),
@@ -244,10 +246,8 @@ class SideBar extends StatelessWidget {
               ),
               ListTile(
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                          builder: (context) => SettingScreen()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => SettingScreen()));
                 },
                 leading: Icon(Icons.settings),
                 title: Text('App Settings'),

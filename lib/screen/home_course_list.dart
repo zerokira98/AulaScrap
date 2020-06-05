@@ -24,25 +24,11 @@ class _CourseListHomeState extends State<CourseListHome> {
       'bg-img': 'default.jpg',
     },
   ];
-  List menuStatus = [];
-  var scrollValue = 0.0, viewControlloffset = 116.0;
+  // List menuStatus = [];
   ScrollController scrollController;
   @override
   void initState() {
-    scrollController = ScrollController()
-      ..addListener(() {
-        if (scrollController.offset >= -50 && scrollController.offset <= 180) {
-          setState(() {
-            scrollValue = scrollController.offset;
-          });
-        }
-        if (scrollController.offset >= 116) {
-          // print(viewControlloffset);
-          setState(() {
-            viewControlloffset = scrollController.offset;
-          });
-        }
-      });
+    scrollController = ScrollController();
 
     super.initState();
   }
@@ -71,17 +57,18 @@ class _CourseListHomeState extends State<CourseListHome> {
           alignment: Alignment.center,
           children: [
             StackSize(),
-            Positioned(top: 12 - (scrollValue * 0.3), child: UserDetailsCard()),
+            Positioned(top: 12, child: UserDetailsCard()),
             Positioned.directional(
               textDirection: TextDirection.ltr,
-              top: 172,
+              top: 178,
               child: Container(
                 padding: EdgeInsets.zero,
                 width: size.width,
                 child: Grids(),
               ),
             ),
-            Positioned(top: (viewControlloffset), child: ViewControl()),
+            ViewControl(scont: scrollController),
+            // Positioned(top: (viewControlloffset), child: ViewControl()),
           ],
         ),
       ),
@@ -113,57 +100,60 @@ class UserDetailsCard extends StatelessWidget {
   @override
   Widget build(context) {
     var width = MediaQuery.of(context).size.width * 0.96;
-    return Center(
-      child: Card(
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          width: width,
-          height: 90,
-          child: Row(
-            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ProfilePict(),
-              Padding(padding: EdgeInsets.only(left: 10)),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                // mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Text('Nama Lengkap'),
-                  Text('S1 Ekonomi Bisnis'),
-                ],
-              ),
-              Expanded(
-                child: Container(
-                    // color: Colors.purple,
+    return Hero(
+      tag: 'profilecard',
+      child: Center(
+        child: Card(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            width: width,
+            height: 90,
+            child: Row(
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ProfilePict(),
+                Padding(padding: EdgeInsets.only(left: 10)),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  // mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Text('Nama Lengkap'),
+                    Text('S1 Ekonomi Bisnis'),
+                  ],
+                ),
+                Expanded(
+                  child: Container(
+                      // color: Colors.purple,
+                      ),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      // alignment: Alignment.topCenter,
+                      height: 30,
+                      width: 30,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      child: IconButton(
+                          iconSize: 14,
+                          icon: Icon(Icons.arrow_forward),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (context) => ProfileScreen()));
+                          }),
                     ),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    // alignment: Alignment.topCenter,
-                    height: 30,
-                    width: 30,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    child: IconButton(
-                        iconSize: 14,
-                        icon: Icon(Icons.arrow_forward),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                  builder: (context) => ProfileScreen()));
-                        }),
-                  ),
-                ],
-              )
-            ],
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -285,21 +275,29 @@ class CourseCard extends StatelessWidget {
                 margin: EdgeInsets.symmetric(vertical: 6, horizontal: 18),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                        offset: Offset(-3, -3),
-                        color: Colors.black12,
-                        blurRadius: 4.0),
-                    BoxShadow(
-                        offset: Offset(3, 3),
-                        color: Colors.black12,
-                        blurRadius: 4.0),
-                  ],
+                  // boxShadow: [
+                  //   BoxShadow(
+                  //       color: Colors.black12,
+                  //       blurRadius: 2.0,
+                  //       spreadRadius: 2.0),
+                  // ],
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Material(
-                    child:
-                        IconButton(icon: Icon(Icons.share), onPressed: () {})),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Material(
+                      color: Colors.transparent,
+                      child: IconButton(
+                          icon: Icon(Icons.visibility_off), onPressed: () {}),
+                    ),
+                    Material(
+                      color: Colors.transparent,
+                      child: IconButton(
+                          icon: Icon(Icons.star_border), onPressed: () {}),
+                    ),
+                  ],
+                ),
               ),
               //Top Side
               AnimatedContainer(
@@ -309,16 +307,16 @@ class CourseCard extends StatelessWidget {
                     ..translate(openMenu ? 0.0 : -25.0, 0.0, 0.0),
                   margin: EdgeInsets.symmetric(vertical: 6, horizontal: 18),
                   decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                          offset: Offset(-3, -3),
-                          color: Colors.black12,
-                          blurRadius: 8.0),
-                      BoxShadow(
-                          offset: Offset(3, 3),
-                          color: Colors.black12,
-                          blurRadius: 8.0),
-                    ],
+                    // boxShadow: [
+                    //   BoxShadow(
+                    //       offset: Offset(-3, -3),
+                    //       color: Colors.black12,
+                    //       blurRadius: 8.0),
+                    //   BoxShadow(
+                    //       offset: Offset(3, 3),
+                    //       color: Colors.black12,
+                    //       blurRadius: 8.0),
+                    // ],
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Column(
@@ -333,9 +331,6 @@ class CourseCard extends StatelessWidget {
                                         (index % 2).toString() +
                                         '.png'),
                                     fit: BoxFit.cover),
-                                // image: DecorationImage(
-                                //     image: ),
-                                // color: Colors.blue,
                                 gradient: RadialGradient(
                                   colors: [Colors.blue[200], Colors.blue[700]],
                                   center: Alignment(1.0, 1.0),
@@ -365,15 +360,18 @@ class CourseCard extends StatelessWidget {
                           Positioned(
                               left: 8,
                               bottom: 8,
-                              child: Text(
-                                'Fisika (S1)',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  shadows: [
-                                    Shadow(
-                                      blurRadius: 8,
-                                    ),
-                                  ],
+                              child: Material(
+                                color: Colors.transparent,
+                                child: Text(
+                                  'Fisika (S1)',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    shadows: [
+                                      Shadow(
+                                        blurRadius: 8,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ))
                         ]),
@@ -410,24 +408,87 @@ class CourseCard extends StatelessWidget {
   }
 }
 
-class ViewControl extends StatelessWidget {
+class ViewControl extends StatefulWidget {
+  ViewControl({this.scont});
+  final ScrollController scont;
+  @override
+  _ViewControlState createState() => _ViewControlState();
+}
+
+class _ViewControlState extends State<ViewControl> {
+  var viewControlloffset = 116.0;
+  int filterVal = 0;
+  int sortByVal = 0;
+  @override
+  void initState() {
+    this.widget.scont.addListener(() {
+      if (this.widget.scont.offset >= 116) {
+        setState(() {
+          viewControlloffset = this.widget.scont.offset;
+        });
+      } else if (viewControlloffset != 115.0) {
+        setState(() {
+          viewControlloffset = 115.0;
+        });
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8),
-      color: Colors.grey[350],
-      width: size.width,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          DropdownButton(items: [
-            DropdownMenuItem(child: Text('Filter')),
-          ], onChanged: (value) {}),
-          DropdownButton(items: [
-            DropdownMenuItem(child: Text('Sort')),
-          ], onChanged: (value) {}),
-        ],
+    return Positioned(
+      top: viewControlloffset,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          boxShadow: [BoxShadow(offset: Offset(0, 1), blurRadius: 2.0)],
+          color: Colors.white,
+        ),
+        width: size.width,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Icon(Icons.filter_list),
+                DropdownButton(
+                    value: filterVal,
+                    items: [
+                      DropdownMenuItem(
+                          child: Text('All(Except Hidden)'), value: 0),
+                      DropdownMenuItem(child: Text('In progress'), value: 1),
+                      DropdownMenuItem(child: Text('Future'), value: 2),
+                      DropdownMenuItem(child: Text('Past'), value: 3),
+                      DropdownMenuItem(child: Text('Starred'), value: 4),
+                      DropdownMenuItem(child: Text('Hidden'), value: 5),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        filterVal = value;
+                      });
+                    }),
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Icon(Icons.sort),
+                DropdownButton(
+                    value: sortByVal,
+                    items: [
+                      DropdownMenuItem(child: Text('Course Name'), value: 0),
+                      DropdownMenuItem(child: Text('Last Accessed'), value: 1),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        sortByVal = value;
+                      });
+                    }),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

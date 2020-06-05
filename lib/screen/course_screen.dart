@@ -6,22 +6,38 @@ class CourseScreen extends StatelessWidget {
   final int i;
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return Scaffold(
       // appBar: AppBar(
       //   title: Text('Course Details'),
       //   centerTitle: true,
       // ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Container(
-              child: Hero(
-                  tag: 'cbanner$i',
-                  child: CourseCard(openMenu: true, index: i)),
+      body: Stack(
+        children: <Widget>[
+          Container(
+            width: size.width,
+            height: size.height,
+          ),
+          Positioned(
+            // top: 140,
+            child: Container(
+              height: size.height,
+              width: size.width,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(top: 140),
+                child: Column(
+                  children: <Widget>[
+                    for (var i = 0; i < 3; i++) CardPerMinggu(),
+                  ],
+                ),
+              ),
             ),
-            for (var i = 0; i < 3; i++) CardPerMinggu(),
-          ],
-        ),
+          ),
+          Container(
+            child: Hero(
+                tag: 'cbanner$i', child: CourseCard(openMenu: true, index: i)),
+          ),
+        ],
       ),
     );
   }

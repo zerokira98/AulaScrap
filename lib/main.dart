@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:aula/bloc/authentication/authentication_bloc.dart';
 import 'package:aula/bloc/cardlist/cardlist_bloc.dart';
 import 'package:aula/bloc_delegate.dart';
@@ -29,6 +30,13 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        pageTransitionsTheme: PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: SharedAxisPageTransitionsBuilder(
+                transitionType: SharedAxisTransitionType.horizontal),
+            TargetPlatform.iOS: FadeThroughPageTransitionsBuilder(),
+          },
+        ),
       ),
       home: LoginScreen(),
     );
