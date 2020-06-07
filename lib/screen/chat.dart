@@ -54,7 +54,6 @@ class _ChatRoomState extends State<ChatRoom>
                           BoxConstraints(minHeight: constraint.maxHeight),
                       child: IntrinsicHeight(
                         child: NavigationRail(
-                          // minWidth: 72,
                           minExtendedWidth: 128.0 + 64.0,
                           labelType:
                               orient == 0 ? NavigationRailLabelType.all : null,
@@ -69,12 +68,14 @@ class _ChatRoomState extends State<ChatRoom>
                             ),
                             NavigationRailDestination(
                               icon: CircleAvatar(),
-                              selectedIcon: Icon(Icons.book),
+                              selectedIcon: CircleAvatar(
+                                radius: 24,
+                              ),
                               label: Text('Second'),
                             ),
                             NavigationRailDestination(
                               icon: Icon(Icons.add_circle_outline),
-                              selectedIcon: Icon(Icons.book),
+                              selectedIcon: Icon(Icons.add_circle),
                               label: Text('Second'),
                             ),
                           ],
@@ -91,7 +92,7 @@ class _ChatRoomState extends State<ChatRoom>
                 }),
                 VerticalDivider(thickness: 1, width: 1),
                 Expanded(
-                  child: MessageScreen(),
+                  child: MessageScreen(id: selectedIndex),
                 ),
               ],
             ),
@@ -106,6 +107,8 @@ class _ChatRoomState extends State<ChatRoom>
 }
 
 class MessageScreen extends StatelessWidget {
+  MessageScreen({this.id});
+  final int id;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -115,7 +118,9 @@ class MessageScreen extends StatelessWidget {
           child: SingleChildScrollView(
             reverse: true,
             child: Column(
-              children: <Widget>[for (int i = 0; i < 15; i++) Text('gamen')],
+              children: <Widget>[
+                for (int i = 0; i < 15; i++) Text('gamen $id')
+              ],
             ),
           ),
         )),
@@ -178,27 +183,30 @@ class _SearchButtonState extends State<SearchButton> {
           width: MediaQuery.of(context).size.width,
         ),
         Positioned(
-          bottom: 20,
+          bottom: 17,
           right: 20,
           child: AnimatedContainer(
             duration: Duration(milliseconds: 500),
             curve: Curves.easeInOut,
             alignment: Alignment.center,
-            height: 42.0,
+            height: 48.0,
             decoration: BoxDecoration(
-              color: Colors.grey,
+              color: Colors.white,
+              border: Border.all(color: Colors.blue),
               borderRadius: BorderRadius.horizontal(
-                  left: Radius.circular(8), right: Radius.circular(8.0)),
+                  left: Radius.circular(8), right: Radius.circular(18.0)),
             ),
             width: width,
             child: SingleChildScrollView(
+              physics: NeverScrollableScrollPhysics(),
               scrollDirection: Axis.horizontal,
               child: AnimatedContainer(
                 duration: Duration(milliseconds: 500),
                 width: width,
                 // padding: EdgeInsets.only(right: 52),
-                padding: EdgeInsets.fromLTRB(8.0, 8.0, 52.0, 8.0),
+                padding: EdgeInsets.fromLTRB(8.0, 2.0, 48.0, 2.0),
                 child: TextField(
+                  maxLines: 1,
                   controller: tec,
                   focusNode: searchNode,
                   decoration: InputDecoration(
@@ -222,7 +230,7 @@ class _SearchButtonState extends State<SearchButton> {
                 setState(() {
                   open = !open;
                   width =
-                      open ? MediaQuery.of(context).size.width - 96 + 24 : 2.0;
+                      open ? MediaQuery.of(context).size.width - 96 + 24 : 0.0;
                 });
                 if (open) {
                   searchNode.requestFocus();

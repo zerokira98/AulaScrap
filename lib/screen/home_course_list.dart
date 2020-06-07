@@ -10,6 +10,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aula/bloc/cardlist/cardlist_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 
 class CourseListHome extends StatefulWidget {
   @override
@@ -170,11 +173,35 @@ class _ProfilePictState extends State<ProfilePict> {
   File _image;
   final picker = ImagePicker();
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future setup() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var dir = prefs.getString('profile_picture');
+    return _image = File(dir);
+  }
+
   Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    var pickedFile = await picker.getImage(source: ImageSource.gallery);
+    if (pickedFile == null) return;
+    //get sys dir
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+
+// copy the file to a new path
+    var extensi = (extension(pickedFile.path));
+    final File newImage =
+        await File(pickedFile.path).copy('$appDocPath/pp$extensi');
+
+    //set shpref
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('profile_picture', newImage.path);
 
     setState(() {
-      _image = File(pickedFile.path);
+      _image = File(newImage.path);
     });
   }
 
@@ -185,11 +212,15 @@ class _ProfilePictState extends State<ProfilePict> {
         print('tapped');
         getImage();
       },
-      child: CircleAvatar(
-        backgroundImage: _image != null ? FileImage(_image) : null,
-        // child: _image != null ? Image.file(_image) : Container(),
-        radius: 28,
-      ),
+      child: FutureBuilder(
+          // stream: null,
+          future: setup(),
+          builder: (context, snapshot) {
+            return CircleAvatar(
+              backgroundImage: _image != null ? FileImage(_image) : null,
+              radius: 28,
+            );
+          }),
     );
   }
 }
