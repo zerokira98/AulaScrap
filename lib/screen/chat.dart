@@ -1,4 +1,8 @@
+// import 'package:animations/animations.dart';
+import 'package:aula/bloc/messaging/messaging_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatRoom extends StatefulWidget {
   @override
@@ -10,10 +14,23 @@ class _ChatRoomState extends State<ChatRoom>
   TabController tc;
   PageController pc;
   int selectedIndex = 0;
+  var openedpage = 0.0;
   @override
   void initState() {
     tc = TabController(length: 2, vsync: this);
-    pc = PageController(initialPage: 0);
+    pc = PageController(initialPage: 0)
+      ..addListener(() {
+        if (pc.page == 0) {
+          setState(() {
+            openedpage = pc.page;
+          });
+        }
+        if (pc.page == 1) {
+          setState(() {
+            openedpage = pc.page;
+          });
+        }
+      });
     super.initState();
   }
 
@@ -23,6 +40,11 @@ class _ChatRoomState extends State<ChatRoom>
     // var size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
+        actions: <Widget>[
+          openedpage == 1.0
+              ? IconButton(icon: Icon(Icons.person_add), onPressed: () {})
+              : Container(),
+        ],
         bottom: TabBar(
           labelPadding: EdgeInsets.symmetric(vertical: 12),
           onTap: (i) {
@@ -44,59 +66,65 @@ class _ChatRoomState extends State<ChatRoom>
           tc.animateTo(i);
         },
         children: <Widget>[
-          Container(
-            child: Row(
-              children: <Widget>[
-                LayoutBuilder(builder: (context, constraint) {
-                  return SingleChildScrollView(
-                    child: ConstrainedBox(
-                      constraints:
-                          BoxConstraints(minHeight: constraint.maxHeight),
-                      child: IntrinsicHeight(
-                        child: NavigationRail(
-                          minExtendedWidth: 128.0 + 64.0,
-                          labelType:
-                              orient == 0 ? NavigationRailLabelType.all : null,
-                          extended: orient == 0 ? false : true,
-                          destinations: [
-                            NavigationRailDestination(
-                              icon: CircleAvatar(),
-                              selectedIcon: CircleAvatar(
-                                radius: 24,
-                              ),
-                              label: Text('First'),
+          BlocBuilder<MessagingBloc, MessagingState>(builder: (context, state) {
+            if (state is Complete) {
+              return Container(
+                child: Row(
+                  children: <Widget>[
+                    LayoutBuilder(builder: (context, constraint) {
+                      return SingleChildScrollView(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                              minHeight: constraint.maxHeight, maxWidth: 72.0),
+                          child: IntrinsicHeight(
+                            child: NavigationRail(
+                              minExtendedWidth: 128.0 + 64.0,
+                              labelType: orient == 0
+                                  ? NavigationRailLabelType.all
+                                  : null,
+                              extended: orient == 0 ? false : true,
+                              destinations: [
+                                for (int i = 0; i < state.sideChat.length; i++)
+                                  NavigationRailDestination(
+                                    icon: CircleAvatar(),
+                                    selectedIcon: CircleAvatar(
+                                      radius: 24,
+                                    ),
+                                    label: Text(
+                                      state.sideChat[i]['idTo'] ?? 'hi',
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                    ),
+                                  ),
+                                NavigationRailDestination(
+                                  icon: Icon(Icons.add_circle_outline),
+                                  selectedIcon: Icon(Icons.add_circle),
+                                  label: Text('Second'),
+                                ),
+                              ],
+                              selectedIndex: selectedIndex,
+                              onDestinationSelected: (i) {
+                                context.bloc<MessagingBloc>().add(ShowMessages(
+                                    idTo: state.sideChat[i]['idTo']));
+                                setState(() {
+                                  selectedIndex = i;
+                                });
+                              },
                             ),
-                            NavigationRailDestination(
-                              icon: CircleAvatar(),
-                              selectedIcon: CircleAvatar(
-                                radius: 24,
-                              ),
-                              label: Text('Second'),
-                            ),
-                            NavigationRailDestination(
-                              icon: Icon(Icons.add_circle_outline),
-                              selectedIcon: Icon(Icons.add_circle),
-                              label: Text('Second'),
-                            ),
-                          ],
-                          selectedIndex: selectedIndex,
-                          onDestinationSelected: (i) {
-                            setState(() {
-                              selectedIndex = i;
-                            });
-                          },
+                          ),
                         ),
-                      ),
+                      );
+                    }),
+                    VerticalDivider(thickness: 1, width: 1),
+                    Expanded(
+                      child: MessageScreen(id: selectedIndex),
                     ),
-                  );
-                }),
-                VerticalDivider(thickness: 1, width: 1),
-                Expanded(
-                  child: MessageScreen(id: selectedIndex),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              );
+            }
+            return CircularProgressIndicator();
+          }),
           Container(
             child: ContactPage(),
           ),
@@ -107,7 +135,10 @@ class _ChatRoomState extends State<ChatRoom>
 }
 
 class MessageScreen extends StatelessWidget {
-  MessageScreen({this.id});
+  MessageScreen({
+    this.id,
+  });
+
   final int id;
   @override
   Widget build(BuildContext context) {
@@ -119,7 +150,18 @@ class MessageScreen extends StatelessWidget {
             reverse: true,
             child: Column(
               children: <Widget>[
-                for (int i = 0; i < 15; i++) Text('gamen $id')
+                for (int i = 0; i < 10; i++)
+                  Container(
+                      padding: EdgeInsets.all(8),
+                      color: i % 2 == 0 ? Colors.blue : Colors.white,
+                      alignment: i % 2 == 0
+                          ? Alignment.centerLeft
+                          : Alignment.centerRight,
+                      child: Text(
+                        'gamen $id',
+                        style: TextStyle(
+                            color: i % 2 == 0 ? Colors.white : Colors.black),
+                      ))
               ],
             ),
           ),
@@ -142,24 +184,38 @@ class MessageScreen extends StatelessWidget {
 }
 
 class ContactPage extends StatelessWidget {
+  Widget _tileCard(context, DocumentSnapshot document) {
+    return Column(
+      children: <Widget>[
+        ListTile(
+          title: Text(document['email']),
+          leading: CircleAvatar(),
+        ),
+        Divider()
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: SearchButton(),
-      body: ListView.builder(
-        itemBuilder: (context, i) {
-          return Column(
-            children: <Widget>[
-              ListTile(
-                title: Text('Nama Lengkap'),
-                leading: CircleAvatar(),
-              ),
-              Divider()
-            ],
-          );
-        },
-        itemCount: 14,
-      ),
+      body: StreamBuilder(
+          stream: Firestore.instance.collection('users').snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            }
+            if (snapshot.hasData) {
+              return ListView.builder(
+                itemBuilder: (context, i) {
+                  return _tileCard(context, snapshot.data.documents[i]);
+                },
+                itemCount: snapshot.data.documents.length,
+              );
+            }
+            return CircularProgressIndicator();
+          }),
     );
   }
 }
@@ -173,7 +229,7 @@ class _SearchButtonState extends State<SearchButton> {
   TextEditingController tec = TextEditingController();
   FocusNode searchNode = FocusNode();
   bool open = false;
-  double width = 2.0;
+  double width = 0.0;
   @override
   Widget build(BuildContext context) {
     return Stack(

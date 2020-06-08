@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:aula/repository/firestore.dart';
 import 'package:bloc/bloc.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:aula/repository/user_repository.dart';
@@ -8,9 +10,14 @@ import 'package:aula/etc/validators.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final UserRepository _userRepository;
+  final FirestoreRepo _firestore;
 
-  RegisterBloc({@required UserRepository userRepository})
+  RegisterBloc(
+      {@required UserRepository userRepository,
+      @required FirestoreRepo firestore})
       : assert(userRepository != null),
+        assert(firestore != null),
+        _firestore = firestore,
         _userRepository = userRepository;
 
   @override
@@ -50,8 +57,16 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   Stream<RegisterState> _mapUsernameSubmit(String username) async* {
     try {
       await _userRepository.setUser(username);
+      var email = await _userRepository.getUser();
+      var data = {
+        'name': '$username',
+        'email': '$email',
+      };
+      await _firestore.setUser(data);
       yield RegisterState.success2();
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
   }
 
   Stream<RegisterState> _mapEmailChangedToState(String email) async* {
@@ -76,8 +91,10 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         email: email,
         password: password,
       );
+
       yield RegisterState.success();
-    } catch (_) {
+    } catch (e) {
+      print(e);
       yield RegisterState.failure();
     }
   }

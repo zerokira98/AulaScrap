@@ -4,6 +4,7 @@ import 'package:aula/bloc/authentication_bloc/bloc.dart';
 // import 'package:aula/bloc/authentication_bloc/authentication_event.dart';
 import 'package:aula/bloc/cardlist/cardlist_bloc.dart';
 import 'package:aula/bloc_delegate.dart';
+import 'package:aula/repository/firestore.dart';
 import 'package:aula/repository/user_repository.dart';
 import 'package:aula/screen/home_screen.dart';
 import 'package:aula/screen/signinup.dart';
@@ -13,21 +14,31 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   final UserRepository user = UserRepository();
+  final FirestoreRepo storage = FirestoreRepo();
   BlocSupervisor.delegate = SimpleBlocDelegate();
-  runApp(MultiBlocProvider(providers: [
-    BlocProvider(
-      create: (context) =>
-          AuthenticationBloc(userRepository: user)..add(AppStarted()),
-    ),
-    BlocProvider(
-      create: (context) => CardlistBloc()..add(LoadData(5)),
-    ),
-  ], child: MyApp(userRepository: user)));
+  runApp(MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(create: (context) => user),
+        RepositoryProvider(create: (context) => storage),
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) =>
+                AuthenticationBloc(userRepository: user)..add(AppStarted()),
+          ),
+          BlocProvider(
+            create: (context) => CardlistBloc()..add(LoadData(5)),
+          ),
+        ],
+        child: MyApp(userRepository: user, firestore: storage),
+      )));
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({this.userRepository});
+  MyApp({this.userRepository, this.firestore});
   final UserRepository userRepository;
+  final FirestoreRepo firestore;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -56,7 +67,8 @@ class MyApp extends StatelessWidget {
           builder: (context, state) {
             if (state is Authenticated) return HomeScreen();
             if (state is Unauthenticated)
-              return SignInUp(userRepository: userRepository);
+              return SignInUp(
+                  userRepository: userRepository, firestore: firestore);
             return CircularProgressIndicator();
           },
         ),

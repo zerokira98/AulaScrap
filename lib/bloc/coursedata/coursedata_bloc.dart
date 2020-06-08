@@ -13,7 +13,5 @@ class CoursedataBloc extends Bloc<CoursedataEvent, CoursedataState> {
   @override
   Stream<CoursedataState> mapEventToState(
     CoursedataEvent event,
-  ) async* {
-    // TODO: implement mapEventToState
-  }
+  ) async* {}
 }

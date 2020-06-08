@@ -1,3 +1,4 @@
+import 'package:aula/repository/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aula/repository/user_repository.dart';
@@ -8,8 +9,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SignInUp extends StatefulWidget {
   final UserRepository _userRepository;
   final bool fromlogout;
+  final FirestoreRepo firestore;
 
-  SignInUp({Key key, @required UserRepository userRepository, this.fromlogout})
+  SignInUp(
+      {Key key,
+      @required UserRepository userRepository,
+      this.fromlogout,
+      this.firestore})
       : assert(userRepository != null),
         _userRepository = userRepository,
         super(key: key);
@@ -110,14 +116,15 @@ class _LoginScreenState extends State<SignInUp> {
                         image: AssetImage('res/signscreen/login-default.jpg'),
                         fit: BoxFit.cover)),
                 child: LoginForm(
-                  userRepository: widget._userRepository,
+                  // userRepository: widget._userRepository,
                   pcontrol: _pcontroller,
                 ),
               ),
             ),
             BlocProvider<RegisterBloc>(
-              create: (context) =>
-                  RegisterBloc(userRepository: widget._userRepository),
+              create: (context) => RegisterBloc(
+                  userRepository: widget._userRepository,
+                  firestore: widget.firestore),
               child: Container(
                   decoration: BoxDecoration(
                       image: DecorationImage(

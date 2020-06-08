@@ -5,7 +5,6 @@ import 'package:meta/meta.dart';
 abstract class AuthenticationEvent extends Equatable {
   // AuthenticationEvent([List props = const []]) ;
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 

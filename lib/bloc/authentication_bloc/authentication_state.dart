@@ -4,7 +4,6 @@ import 'package:meta/meta.dart';
 @immutable
 abstract class AuthenticationState extends Equatable {
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
@@ -19,7 +18,6 @@ class Authenticated extends AuthenticationState {
 
   Authenticated(this.displayName, this.email);
   @override
-  // TODO: implement props
   List<Object> get props => [displayName, email];
 
   @override
@@ -31,7 +29,6 @@ class Unauthenticated extends AuthenticationState {
   final bool fromLogOut;
   Unauthenticated(this.fromLogOut);
   @override
-  // TODO: implement props
   List<Object> get props => [fromLogOut];
 
   @override

@@ -5,7 +5,6 @@ import 'package:meta/meta.dart';
 abstract class RegisterEvent extends Equatable {
   // RegisterEvent([List props = const []]) : super(props);
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
@@ -15,7 +14,6 @@ class EmailChanged extends RegisterEvent {
   EmailChanged({@required this.email});
 
   @override
-  // TODO: implement props
   List<Object> get props => [email];
 
   @override
@@ -27,7 +25,6 @@ class PasswordChanged extends RegisterEvent {
 
   PasswordChanged({@required this.password});
   @override
-  // TODO: implement props
   List<Object> get props => [password];
 
   @override
@@ -39,7 +36,6 @@ class NameChange extends RegisterEvent {
   NameChange({@required this.username});
 
   @override
-  // TODO: implement props
   List<Object> get props => [username];
   @override
   String toString() {
@@ -53,7 +49,6 @@ class Submitted extends RegisterEvent {
 
   Submitted({@required this.email, @required this.password});
   @override
-  // TODO: implement props
   List<Object> get props => [email, password];
   @override
   String toString() {

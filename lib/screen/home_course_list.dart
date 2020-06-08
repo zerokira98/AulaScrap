@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
@@ -44,7 +43,7 @@ class _CourseListHomeState extends State<CourseListHome> {
 
   @override
   Widget build(BuildContext context) {
-    var orient = MediaQuery.of(context).orientation.index;
+    // var orient = MediaQuery.of(context).orientation.index;
     var size = MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
@@ -186,6 +185,7 @@ class _ProfilePictState extends State<ProfilePict> {
 
   Future getImage() async {
     var pickedFile = await picker.getImage(source: ImageSource.gallery);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     if (pickedFile == null) return;
     //get sys dir
     Directory appDocDir = await getApplicationDocumentsDirectory();
@@ -193,16 +193,24 @@ class _ProfilePictState extends State<ProfilePict> {
 
 // copy the file to a new path
     var extensi = (extension(pickedFile.path));
-    final File newImage =
-        await File(pickedFile.path).copy('$appDocPath/pp$extensi');
-
-    //set shpref
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('profile_picture', newImage.path);
-
-    setState(() {
-      _image = File(newImage.path);
-    });
+    try {
+      var tgl = DateTime.now();
+      String fileLama = prefs.getString('profile_picture');
+      if (fileLama != null) {
+        await File(fileLama).delete();
+      }
+      String namaFile = tgl.minute.toString() + tgl.second.toString();
+      String newDir = '$appDocPath/$namaFile' 'pp$extensi';
+      File newImage = await File(pickedFile.path).copy(newDir);
+      //set shpref
+      prefs.setString('profile_picture', newImage.path);
+      print(newImage.path);
+      setState(() {
+        _image = File(newImage.path);
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -435,6 +443,7 @@ class CourseCard extends StatelessWidget {
           ),
         );
       }
+      return CircularProgressIndicator();
     });
   }
 }

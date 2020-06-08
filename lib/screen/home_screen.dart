@@ -1,14 +1,17 @@
+import 'package:aula/bloc/authentication_bloc/bloc.dart';
+import 'package:aula/bloc/messaging/messaging_bloc.dart';
 import 'package:aula/screen/calendar_screen.dart';
 import 'package:aula/screen/chat.dart';
 import 'package:aula/screen/home_course_list.dart';
 import 'package:aula/screen/notif.dart';
 import 'package:aula/screen/setting_screen.dart';
 import 'package:flare_flutter/flare_actor.dart';
-// import 'package:flare_flutter/flare_controller.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -128,7 +131,10 @@ class _HomeScreenState extends State<HomeScreen>
                             Navigator.push(
                                 context,
                                 CupertinoPageRoute(
-                                    builder: (context) => ChatRoom()));
+                                    builder: (context) => BlocProvider(
+                                        create: (context) =>
+                                            MessagingBloc()..add(Initialize()),
+                                        child: ChatRoom())));
                           },
                           icon: Icon(Icons.chat_bubble)),
                       Positioned(
@@ -205,6 +211,8 @@ class SideBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width * 0.78;
+
+    var bloc = BlocProvider.of<AuthenticationBloc>(context);
     return Container(
       height: double.infinity,
       width: width,
@@ -253,6 +261,9 @@ class SideBar extends StatelessWidget {
                 title: Text('App Settings'),
               ),
               ListTile(
+                onTap: () {
+                  bloc.add(LoggedOut());
+                },
                 leading: Icon(Icons.settings_power),
                 title: Text('Log me out!!'),
               )
