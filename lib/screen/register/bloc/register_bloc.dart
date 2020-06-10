@@ -48,8 +48,11 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     } else if (event is PasswordChanged) {
       yield* _mapPasswordChangedToState(event.password);
     } else if (event is Submitted) {
-      yield* _mapFormSubmittedToState(event.email, event.password);
+      yield* _mapFormSubmittedToState(
+          event.email, event.password, event.username);
     } else if (event is NameChange) {
+      yield* _mapUsernameChangedToState(event.username);
+    } else if (event is NameSubmit) {
       yield* _mapUsernameSubmit(event.username);
     }
   }
@@ -81,9 +84,16 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     );
   }
 
+  Stream<RegisterState> _mapUsernameChangedToState(String username) async* {
+    yield state.update(
+      isUsernameValid: await _firestore.getUsernameAvailability(username),
+    );
+  }
+
   Stream<RegisterState> _mapFormSubmittedToState(
     String email,
     String password,
+    String username,
   ) async* {
     yield RegisterState.loading();
     try {
@@ -91,8 +101,14 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         email: email,
         password: password,
       );
-
-      yield RegisterState.success();
+      await _userRepository.setUser(username);
+      var email1 = await _userRepository.getUser();
+      var data = {
+        'name': '$username',
+        'email': '$email1',
+      };
+      await _firestore.setUser(data);
+      yield RegisterState.success2();
     } catch (e) {
       print(e);
       yield RegisterState.failure();

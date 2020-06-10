@@ -22,8 +22,9 @@ class Complete extends MessagingState {
   //   'isActive':false,
   // }
   final List messages;
-  Complete({this.messages, this.sideChat});
+  final int selectedId;
+  Complete({this.messages, this.sideChat, this.selectedId});
 
   @override
-  List<Object> get props => messages + sideChat;
+  List<Object> get props => messages + sideChat + [selectedId];
 }

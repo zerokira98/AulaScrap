@@ -14,6 +14,9 @@ class ShowMessages extends MessagingEvent {
   @override
   List<Object> get props => [idTo];
 }
+// class AddSidebar extends MessagingEvent {
+
+// }
 
 class SendMessages extends MessagingEvent {
   SendMessages({this.content});

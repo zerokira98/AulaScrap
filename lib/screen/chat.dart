@@ -1,5 +1,7 @@
 // import 'package:animations/animations.dart';
 import 'package:aula/bloc/messaging/messaging_bloc.dart';
+import 'package:aula/repository/firestore.dart';
+import 'package:aula/repository/user_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,9 +43,13 @@ class _ChatRoomState extends State<ChatRoom>
     return Scaffold(
       appBar: AppBar(
         actions: <Widget>[
-          openedpage == 1.0
-              ? IconButton(icon: Icon(Icons.person_add), onPressed: () {})
-              : Container(),
+          AnimatedOpacity(
+            duration: Duration(milliseconds: 200),
+            opacity: openedpage == 0.0 ? 0.0 : 1.0,
+            child: IconButton(
+                icon: Icon(Icons.person_add),
+                onPressed: openedpage == 0.0 ? null : () {}),
+          )
         ],
         bottom: TabBar(
           labelPadding: EdgeInsets.symmetric(vertical: 12),
@@ -75,7 +81,8 @@ class _ChatRoomState extends State<ChatRoom>
                       return SingleChildScrollView(
                         child: ConstrainedBox(
                           constraints: BoxConstraints(
-                              minHeight: constraint.maxHeight, maxWidth: 72.0),
+                              minHeight: constraint.maxHeight,
+                              maxWidth: orient == 0 ? 72.0 : double.infinity),
                           child: IntrinsicHeight(
                             child: NavigationRail(
                               minExtendedWidth: 128.0 + 64.0,
@@ -102,13 +109,20 @@ class _ChatRoomState extends State<ChatRoom>
                                   label: Text('Second'),
                                 ),
                               ],
-                              selectedIndex: selectedIndex,
+                              selectedIndex: state.selectedId,
                               onDestinationSelected: (i) {
-                                context.bloc<MessagingBloc>().add(ShowMessages(
-                                    idTo: state.sideChat[i]['idTo']));
-                                setState(() {
-                                  selectedIndex = i;
-                                });
+                                if (i != state.sideChat.length) {
+                                  context.bloc<MessagingBloc>().add(
+                                      ShowMessages(
+                                          idTo: state.sideChat[i]['idTo']));
+                                  setState(() {
+                                    selectedIndex = state.selectedId;
+                                  });
+                                } else {
+                                  pc.animateToPage(2,
+                                      duration: Duration(milliseconds: 400),
+                                      curve: Curves.easeInOut);
+                                }
                               },
                             ),
                           ),
@@ -117,19 +131,112 @@ class _ChatRoomState extends State<ChatRoom>
                     }),
                     VerticalDivider(thickness: 1, width: 1),
                     Expanded(
-                      child: MessageScreen(id: selectedIndex),
+                      child: MessageScreen2(
+                        id: state.selectedId,
+                      ),
                     ),
                   ],
                 ),
               );
             }
-            return CircularProgressIndicator();
+            return Center(child: CircularProgressIndicator());
           }),
           Container(
-            child: ContactPage(),
+            child: ContactPage(pc: pc),
           ),
         ],
       ),
+    );
+  }
+}
+
+class MessageScreen2 extends StatelessWidget {
+  final int id;
+  PageController pc;
+  TextEditingController messageContentController = TextEditingController()
+    ..addListener(() {});
+  MessageScreen2({@required this.id, this.pc});
+  @override
+  Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    var repo = RepositoryProvider.of<FirestoreRepo>(context);
+    var userrepo = RepositoryProvider.of<UserRepository>(context);
+    var bloc = BlocProvider.of<MessagingBloc>(context);
+    var self = (bloc.state as Complete).sideChat[0]['idTo'];
+    var target = (bloc.state as Complete).sideChat[id]['idTo'];
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: Container(
+            child: StreamBuilder(
+                stream: repo.getMessage(self, target),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snap) {
+                  if (snap.hasData) {
+                    if (snap.data.documents.isEmpty) {
+                      return Text('nodata');
+                    }
+                    return ListView.builder(
+                        reverse: true,
+                        physics: BouncingScrollPhysics(),
+                        itemBuilder: (context, i) {
+                          return Container(
+                              padding: EdgeInsets.all(8),
+                              alignment:
+                                  snap.data.documents[i]['sender'] == self
+                                      ? Alignment.centerRight
+                                      : Alignment.centerLeft,
+                              child: Container(
+                                constraints:
+                                    BoxConstraints(maxWidth: size.width * 0.5),
+                                color: snap.data.documents[i]['sender'] == self
+                                    ? Colors.blue
+                                    : Colors.grey[200],
+                                padding: EdgeInsets.all(8.0),
+                                child: Text(
+                                  snap.data.documents[i]['content'],
+                                  style: TextStyle(
+                                      color: snap.data.documents[i]['sender'] ==
+                                              self
+                                          ? Colors.white
+                                          : Colors.black),
+                                ),
+                              ));
+                        },
+                        itemCount: snap.data.documents.length);
+                  }
+                  return Center(child: CircularProgressIndicator());
+                }),
+          ),
+        ),
+        Container(
+          color: Colors.white,
+          height: 56,
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              IconButton(icon: Icon(Icons.add_circle), onPressed: () {}),
+              Expanded(
+                  child: TextField(
+                controller: messageContentController,
+                // maxLines: 2,
+              )),
+              IconButton(
+                  icon: Icon(Icons.send),
+                  onPressed: () {
+                    if (messageContentController.text.isNotEmpty) {
+                      bloc.add(
+                          SendMessages(content: messageContentController.text));
+                      messageContentController.clear();
+                    } else if (messageContentController.text.isEmpty) {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text('Empty'),
+                      ));
+                    }
+                  }),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -184,10 +291,18 @@ class MessageScreen extends StatelessWidget {
 }
 
 class ContactPage extends StatelessWidget {
+  ContactPage({this.pc});
+  final PageController pc;
   Widget _tileCard(context, DocumentSnapshot document) {
+    var bloc = BlocProvider.of<MessagingBloc>(context);
     return Column(
       children: <Widget>[
         ListTile(
+          onTap: () {
+            bloc.add(ShowMessages(idTo: document['email']));
+            pc.animateToPage(0,
+                duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+          },
           title: Text(document['email']),
           leading: CircleAvatar(),
         ),

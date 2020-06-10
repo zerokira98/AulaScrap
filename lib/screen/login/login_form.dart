@@ -263,7 +263,7 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void _onFormSubmitted() {
-    print(_emailController.text);
+    // print(_emailController.text);
     _loginBloc.add(
       LoginWithCredentialsPressed(
         email: _emailController.text,

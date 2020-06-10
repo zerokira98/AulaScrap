@@ -1,3 +1,4 @@
+import 'package:aula/repository/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aula/bloc/authentication_bloc/bloc.dart';
@@ -29,17 +30,21 @@ class _RegisterFormState extends State<RegisterForm> {
     super.initState();
     _registerBloc = BlocProvider.of<RegisterBloc>(context);
     _emailController.addListener(_onEmailChanged);
+    _usernameController.addListener(_changeUsername);
     _passwordController.addListener(_onPasswordChanged);
   }
 
   @override
   Widget build(BuildContext context) {
+    var repo = RepositoryProvider.of<FirestoreRepo>(context);
     var deviceorient = MediaQuery.of(context).orientation.index;
 
     var sidemargin = deviceorient == 0 ? 0.4 : 0.6;
 
     return BlocListener<RegisterBloc, RegisterState>(
       listener: (context, state) {
+        var hai = BlocProvider.of<RegisterBloc>(context);
+        print(hai);
         if (state.isSubmitting) {
           Scaffold.of(context)
             ..hideCurrentSnackBar()
@@ -56,37 +61,41 @@ class _RegisterFormState extends State<RegisterForm> {
             );
         }
         if (state.isSuccess) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) {
-              return AlertDialog(
-                title: Text('Set your username'),
-                content: TextFormField(
-                  controller: _usernameController,
-                  decoration: InputDecoration(hintText: 'Username'),
-                ),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text('Ok'),
-                    onPressed: () {
-                      if (_usernameController.value.text == "") {
-                        print("hes going here");
-                        showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                                  content: Text("empty"),
-                                ));
-                      } else {
-                        _changeUsername();
-                        Navigator.pop(context);
-                      }
-                    },
-                  ),
-                ],
-              );
-            },
-          );
+          // showDialog(
+          //   context: context,
+          //   barrierDismissible: false,
+          //   builder: (context) {
+          //     return BlocBuilder<RegisterBloc, RegisterState>(
+          //         bloc: hai,
+          //         builder: (context, state) {
+          //           if (state.isSuccess) {
+          //             return AlertDialog(
+          //               title: Text('Set your username'),
+          //               content:
+          //               actions: <Widget>[
+          //                 FlatButton(
+          //                   child: Text('Ok'),
+          //                   onPressed: () {
+          //                     if (_usernameController.value.text == "") {
+          //                       print("hes going here");
+          //                       showDialog(
+          //                           context: context,
+          //                           builder: (context) => AlertDialog(
+          //                                 content: Text("empty"),
+          //                               ));
+          //                     } else {
+          //                       _submitUsername();
+          //                       Navigator.pop(context);
+          //                     }
+          //                   },
+          //                 ),
+          //               ],
+          //             );
+          //           }
+          //           return Container();
+          //         });
+          //   },
+          // );
           Scaffold.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
@@ -199,6 +208,20 @@ class _RegisterFormState extends State<RegisterForm> {
                                     : null;
                               },
                             ),
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                            ),
+                            TextFormField(
+                              controller: _usernameController,
+                              autovalidate: true,
+                              validator: (_) {
+                                return !state.isUsernameValid
+                                    ? 'Username has taken'
+                                    : null;
+                              },
+                              decoration: InputDecoration(
+                                  hintText: 'Username', labelText: 'Username'),
+                            ),
                             Padding(padding: EdgeInsets.all(12)),
                             Row(
                               children: <Widget>[
@@ -231,47 +254,6 @@ class _RegisterFormState extends State<RegisterForm> {
               ),
             ),
           );
-          // ),
-
-          // return Padding(
-          //   padding: EdgeInsets.all(20),
-          //   child: Form(
-          //     child: ListView(
-          //       children: <Widget>[
-          //         TextFormField(
-          //           controller: _emailController,
-          //           decoration: InputDecoration(
-          //             icon: Icon(Icons.email),
-          //             labelText: 'Email',
-          //           ),
-          //           autocorrect: false,
-          //           autovalidate: true,
-          //           validator: (_) {
-          //             return !state.isEmailValid ? 'Invalid Email' : null;
-          //           },
-          //         ),
-          //         TextFormField(
-          //           controller: _passwordController,
-          //           decoration: InputDecoration(
-          //             icon: Icon(Icons.lock),
-          //             labelText: 'Password',
-          //           ),
-          //           obscureText: true,
-          //           autocorrect: false,
-          //           autovalidate: true,
-          //           validator: (_) {
-          //             return !state.isPasswordValid ? 'Invalid Password' : null;
-          //           },
-          //         ),
-          //         RegisterButton(
-          //           onPressed: isRegisterButtonEnabled(state)
-          //               ? _onFormSubmitted
-          //               : null,
-          //         ),
-          //       ],
-          //     ),
-          //   ),
-          // );
         },
       ),
     );
@@ -300,11 +282,16 @@ class _RegisterFormState extends State<RegisterForm> {
     _registerBloc.add(NameChange(username: _usernameController.text));
   }
 
+  // void _submitUsername() {
+  //   _registerBloc.add(NameSubmit(username: _usernameController.text));
+  // }
+
   void _onFormSubmitted() {
     _registerBloc.add(
       Submitted(
         email: _emailController.text,
         password: _passwordController.text,
+        username: _usernameController.text,
       ),
     );
   }

@@ -46,6 +46,18 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
+  void onTaps() {
+    if (acont.status == AnimationStatus.completed) {
+      setState(() {
+        acont.reverse();
+      });
+    } else {
+      setState(() {
+        acont.forward();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width * 0.78;
@@ -77,77 +89,77 @@ class _HomeScreenState extends State<HomeScreen>
               ),
             ),
             child: Scaffold(
-              appBar: AppBar(
-                backgroundColor: Colors.blue,
-                leading: InkWell(
-                  onTap: () {
-                    if (acont.status == AnimationStatus.completed) {
-                      setState(() {
-                        acont.reverse();
-                      });
-                    } else {
-                      setState(() {
-                        acont.forward();
-                      });
-                    }
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(Icons.menu),
-                      Text(
-                        'Menu',
-                        textScaleFactor: 0.6,
-                      ),
-                    ],
-                  ),
-                ),
-                // title: Text('Home'),
-                actions: <Widget>[
-                  Stack(
-                    children: <Widget>[
-                      IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                CupertinoPageRoute(
-                                    builder: (context) =>
-                                        NotificationCentre()));
-                          },
-                          icon: Icon(Icons.notifications)),
-                      Positioned(
-                          top: 8,
-                          right: 8,
-                          child: CircleAvatar(
-                            radius: 5,
-                            backgroundColor: Colors.red,
-                          ))
-                    ],
-                  ),
-                  Stack(
-                    children: <Widget>[
-                      IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                CupertinoPageRoute(
-                                    builder: (context) => BlocProvider(
-                                        create: (context) =>
-                                            MessagingBloc()..add(Initialize()),
-                                        child: ChatRoom())));
-                          },
-                          icon: Icon(Icons.chat_bubble)),
-                      Positioned(
-                          top: 8,
-                          right: 8,
-                          child: CircleAvatar(
-                            radius: 5,
-                            backgroundColor: Colors.red,
-                          ))
-                    ],
-                  ),
-                ],
-              ),
+              // appBar: AppBar(
+              //   backgroundColor: Colors.blue,
+              //   leading: InkWell(
+              //     onTap: () {
+              //       if (acont.status == AnimationStatus.completed) {
+              //         setState(() {
+              //           acont.reverse();
+              //         });
+              //       } else {
+              //         setState(() {
+              //           acont.forward();
+              //         });
+              //       }
+              //     },
+              //     child: Column(
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       children: <Widget>[
+              //         Icon(Icons.menu),
+              //         Text(
+              //           'Menu',
+              //           textScaleFactor: 0.6,
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              //   // title: Text('Home'),
+              //   actions: <Widget>[
+              //     Stack(
+              //       children: <Widget>[
+              //         IconButton(
+              //             onPressed: () {
+              //               Navigator.push(
+              //                   context,
+              //                   CupertinoPageRoute(
+              //                       builder: (context) =>
+              //                           NotificationCentre()));
+              //             },
+              //             icon: Icon(Icons.notifications)),
+              //         Positioned(
+              //             top: 8,
+              //             right: 8,
+              //             child: CircleAvatar(
+              //               radius: 5,
+              //               backgroundColor: Colors.red,
+              //             ))
+              //       ],
+              //     ),
+              //     Stack(
+              //       children: <Widget>[
+              //         IconButton(
+              //             onPressed: () {
+              //               Navigator.push(
+              //                   context,
+              //                   CupertinoPageRoute(
+              //                       builder: (context) => BlocProvider(
+              //                           create: (context) =>
+              //                               MessagingBloc()..add(Initialize()),
+              //                           child: ChatRoom())));
+              //             },
+              //             icon: Icon(Icons.chat_bubble)),
+              //         Positioned(
+              //             top: 8,
+              //             right: 8,
+              //             child: CircleAvatar(
+              //               radius: 5,
+              //               backgroundColor: Colors.red,
+              //             ))
+              //       ],
+              //     ),
+              //   ],
+              // ),
               body: Stack(
                 children: <Widget>[
                   Container(
@@ -178,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen>
                                 child: Text(''),
                               ),
                             )
-                          : CourseListHome(),
+                          : CourseListHome(callback: onTaps),
                     ),
                   ),
                 ],

@@ -1,7 +1,12 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:aula/bloc/messaging/messaging_bloc.dart' as msgbloc;
+import 'package:aula/repository/firestore.dart';
+import 'package:aula/repository/user_repository.dart';
+import 'package:aula/screen/chat.dart';
 import 'package:aula/screen/course_screen.dart';
+import 'package:aula/screen/notif.dart';
 import 'package:aula/screen/profile_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +19,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 
 class CourseListHome extends StatefulWidget {
+  final Function callback;
+  CourseListHome({this.callback});
   @override
   _CourseListHomeState createState() => _CourseListHomeState();
 }
@@ -54,15 +61,16 @@ class _CourseListHomeState extends State<CourseListHome> {
       )),
       child: SingleChildScrollView(
         controller: scrollController,
-        physics: BouncingScrollPhysics(),
+        // physics: ,
         child: Stack(
           alignment: Alignment.center,
           children: [
             StackSize(),
-            Positioned(top: 12, child: UserDetailsCard()),
+            Positioned(top: 0, child: UserDetailsCard()),
+            Positioned(top: 0, child: MenuAppBar(callback: widget.callback)),
             Positioned.directional(
               textDirection: TextDirection.ltr,
-              top: 178,
+              top: 210,
               child: Container(
                 padding: EdgeInsets.zero,
                 width: size.width,
@@ -98,64 +106,150 @@ class StackSize extends StatelessWidget {
   }
 }
 
+class MenuAppBar extends StatelessWidget {
+  MenuAppBar({this.callback});
+  final Function callback;
+  final color = Colors.white;
+  @override
+  Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    var firestoreRepo = RepositoryProvider.of<FirestoreRepo>(context);
+    var userRepo = RepositoryProvider.of<UserRepository>(context);
+    return Container(
+      padding: EdgeInsets.fromLTRB(24, 20, 14, 0),
+      width: size.width,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Container(
+            child: InkWell(
+              onTap: callback,
+              child: Icon(Icons.menu, color: color),
+            ),
+          ),
+          Row(children: [
+            Stack(
+              children: <Widget>[
+                IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (context) => NotificationCentre()));
+                    },
+                    icon: Icon(
+                      Icons.notifications,
+                      color: color,
+                    )),
+                Positioned(
+                    top: 8,
+                    right: 8,
+                    child: CircleAvatar(
+                      radius: 5,
+                      backgroundColor: Colors.red,
+                    ))
+              ],
+            ),
+            Stack(
+              children: <Widget>[
+                IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (context) => BlocProvider(
+                                  create: (context) => msgbloc.MessagingBloc(
+                                      firestoreRepo, userRepo)
+                                    ..add(msgbloc.Initialize()),
+                                  child: ChatRoom())));
+                    },
+                    icon: Icon(
+                      Icons.chat_bubble,
+                      color: color,
+                    )),
+                Positioned(
+                    top: 8,
+                    right: 8,
+                    child: CircleAvatar(
+                      radius: 5,
+                      backgroundColor: Colors.red,
+                    ))
+              ],
+            ),
+          ])
+        ],
+      ),
+    );
+  }
+}
+
 class UserDetailsCard extends StatelessWidget {
   @override
   Widget build(context) {
-    var width = MediaQuery.of(context).size.width * 0.96;
+    var width = MediaQuery.of(context).size.width;
     return Hero(
       tag: 'profilecard',
       child: Center(
-        child: Card(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            width: width,
-            height: 90,
-            child: Row(
-              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                ProfilePict(),
-                Padding(padding: EdgeInsets.only(left: 10)),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  // mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Text('Nama Lengkap'),
-                    Text('S1 Ekonomi Bisnis'),
-                  ],
-                ),
-                Expanded(
-                  child: Container(
-                      // color: Colors.purple,
-                      ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      // alignment: Alignment.topCenter,
-                      height: 30,
-                      width: 30,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      child: IconButton(
-                          iconSize: 14,
-                          icon: Icon(Icons.arrow_forward),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                CupertinoPageRoute(
-                                    builder: (context) => ProfileScreen()));
-                          }),
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.purple,
+              borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(48),
+                  bottomRight: Radius.circular(48))),
+          padding: EdgeInsets.fromLTRB(18.0, 64.0, 18.0, 16.0),
+          width: width,
+          height: 150,
+          child: Row(
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ProfilePict(),
+              Padding(padding: EdgeInsets.only(left: 10)),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                // mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    'Nama Lengkap',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Text(
+                    'S1 Ekonomi Bisnis',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: Container(
+                    // color: Colors.purple,
                     ),
-                  ],
-                )
-              ],
-            ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    // alignment: Alignment.topCenter,
+                    height: 30,
+                    width: 30,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    child: IconButton(
+                        iconSize: 14,
+                        icon: Icon(Icons.arrow_forward),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                  builder: (context) => ProfileScreen()));
+                        }),
+                  ),
+                ],
+              )
+            ],
           ),
         ),
       ),
@@ -456,19 +550,19 @@ class ViewControl extends StatefulWidget {
 }
 
 class _ViewControlState extends State<ViewControl> {
-  var viewControlloffset = 116.0;
+  var viewControlloffset = 156.0;
   int filterVal = 0;
   int sortByVal = 0;
   @override
   void initState() {
     this.widget.scont.addListener(() {
-      if (this.widget.scont.offset >= 116) {
+      if (this.widget.scont.offset >= 124) {
         setState(() {
-          viewControlloffset = this.widget.scont.offset;
+          viewControlloffset = this.widget.scont.offset + 24;
         });
-      } else if (viewControlloffset != 115.0) {
+      } else if (viewControlloffset != 155.0) {
         setState(() {
-          viewControlloffset = 115.0;
+          viewControlloffset = 155.0;
         });
       }
     });

@@ -39,6 +39,18 @@ class NameChange extends RegisterEvent {
   List<Object> get props => [username];
   @override
   String toString() {
+    return 'Changed { username : $username }';
+  }
+}
+
+class NameSubmit extends RegisterEvent {
+  final String username;
+  NameSubmit({@required this.username});
+
+  @override
+  List<Object> get props => [username];
+  @override
+  String toString() {
     return 'Submitted { username : $username }';
   }
 }
@@ -46,12 +58,17 @@ class NameChange extends RegisterEvent {
 class Submitted extends RegisterEvent {
   final String email;
   final String password;
+  final String username;
 
-  Submitted({@required this.email, @required this.password});
+  Submitted({
+    @required this.email,
+    @required this.password,
+    @required this.username,
+  });
   @override
-  List<Object> get props => [email, password];
+  List<Object> get props => [email, password, username];
   @override
   String toString() {
-    return 'Submitted { email: $email, password: $password }';
+    return 'Submitted { email: $email, password: $password ,username:$username}';
   }
 }

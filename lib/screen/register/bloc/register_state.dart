@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 class RegisterState {
   final bool isEmailValid;
   final bool isPasswordValid;
+  final bool isUsernameValid;
   final bool isSubmitting;
   final bool isSuccess;
   final bool isSuccess2;
@@ -14,6 +15,7 @@ class RegisterState {
   RegisterState({
     @required this.isEmailValid,
     @required this.isPasswordValid,
+    @required this.isUsernameValid,
     @required this.isSubmitting,
     @required this.isSuccess,
     @required this.isSuccess2,
@@ -24,6 +26,7 @@ class RegisterState {
     return RegisterState(
       isEmailValid: true,
       isPasswordValid: true,
+      isUsernameValid: true,
       isSubmitting: false,
       isSuccess: false,
       isSuccess2: false,
@@ -35,6 +38,7 @@ class RegisterState {
     return RegisterState(
       isEmailValid: true,
       isPasswordValid: true,
+      isUsernameValid: true,
       isSubmitting: true,
       isSuccess: false,
       isSuccess2: false,
@@ -46,6 +50,7 @@ class RegisterState {
     return RegisterState(
       isEmailValid: true,
       isPasswordValid: true,
+      isUsernameValid: true,
       isSubmitting: false,
       isSuccess: false,
       isSuccess2: false,
@@ -57,6 +62,7 @@ class RegisterState {
     return RegisterState(
       isEmailValid: true,
       isPasswordValid: true,
+      isUsernameValid: true,
       isSubmitting: false,
       isSuccess: true,
       isSuccess2: false,
@@ -67,6 +73,7 @@ class RegisterState {
     return RegisterState(
       isEmailValid: true,
       isPasswordValid: true,
+      isUsernameValid: true,
       isSubmitting: false,
       isSuccess: false,
       isSuccess2: true,
@@ -77,10 +84,12 @@ class RegisterState {
   RegisterState update({
     bool isEmailValid,
     bool isPasswordValid,
+    bool isUsernameValid,
   }) {
     return copyWith(
       isEmailValid: isEmailValid,
       isPasswordValid: isPasswordValid,
+      isUsernameValid: isUsernameValid,
       isSubmitting: false,
       isSuccess: false,
       isFailure: false,
@@ -90,6 +99,7 @@ class RegisterState {
   RegisterState copyWith({
     bool isEmailValid,
     bool isPasswordValid,
+    bool isUsernameValid,
     bool isSubmitEnabled,
     bool isSubmitting,
     bool isSuccess,
@@ -99,6 +109,7 @@ class RegisterState {
     return RegisterState(
       isEmailValid: isEmailValid ?? this.isEmailValid,
       isPasswordValid: isPasswordValid ?? this.isPasswordValid,
+      isUsernameValid: isUsernameValid ?? this.isUsernameValid,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       isSuccess: isSuccess ?? this.isSuccess,
       isSuccess2: isSuccess2 ?? this.isSuccess2,
@@ -111,6 +122,7 @@ class RegisterState {
     return '''RegisterState {
       isEmailValid: $isEmailValid,
       isPasswordValid: $isPasswordValid,      
+      isUsernameValid: $isUsernameValid,      
       isSubmitting: $isSubmitting,
       isSuccess: $isSuccess,
       isFailure: $isFailure,
