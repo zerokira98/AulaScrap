@@ -224,7 +224,7 @@ class _LoginFormState extends State<LoginForm> {
                                     child: Text('Daftar'),
                                     onPressed: () {
                                       _pcontrol.nextPage(
-                                          duration: Duration(milliseconds: 700),
+                                          duration: Duration(milliseconds: 750),
                                           curve: Curves.easeInOut);
                                     },
                                   ),

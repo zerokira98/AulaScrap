@@ -1,4 +1,5 @@
 // import 'package:animations/animations.dart';
+import 'package:aula/bloc/contact/contact_bloc.dart' as contact;
 import 'package:aula/bloc/messaging/messaging_bloc.dart';
 import 'package:aula/repository/firestore.dart';
 import 'package:aula/repository/user_repository.dart';
@@ -20,19 +21,19 @@ class _ChatRoomState extends State<ChatRoom>
   @override
   void initState() {
     tc = TabController(length: 2, vsync: this);
-    pc = PageController(initialPage: 0)
-      ..addListener(() {
-        if (pc.page == 0) {
-          setState(() {
-            openedpage = pc.page;
-          });
-        }
-        if (pc.page == 1) {
-          setState(() {
-            openedpage = pc.page;
-          });
-        }
-      });
+    pc = PageController(initialPage: 0);
+    // ..addListener(() {
+    //   if (pc.page == 0) {
+    //     setState(() {
+    //       openedpage = pc.page;
+    //     });
+    //   }
+    //   if (pc.page == 1) {
+    //     setState(() {
+    //       openedpage = pc.page;
+    //     });
+    //   }
+    // });
     super.initState();
   }
 
@@ -43,13 +44,13 @@ class _ChatRoomState extends State<ChatRoom>
     return Scaffold(
       appBar: AppBar(
         actions: <Widget>[
-          AnimatedOpacity(
-            duration: Duration(milliseconds: 200),
-            opacity: openedpage == 0.0 ? 0.0 : 1.0,
-            child: IconButton(
-                icon: Icon(Icons.person_add),
-                onPressed: openedpage == 0.0 ? null : () {}),
-          )
+          // AnimatedOpacity(
+          //   duration: Duration(milliseconds: 200),
+          //   opacity: openedpage == 0.0 ? 0.0 : 1.0,
+          //   child: IconButton(
+          //       icon: Icon(Icons.person_add),
+          //       onPressed: openedpage == 0.0 ? null : () {}),
+          // )
         ],
         bottom: TabBar(
           labelPadding: EdgeInsets.symmetric(vertical: 12),
@@ -152,9 +153,8 @@ class _ChatRoomState extends State<ChatRoom>
 
 class MessageScreen2 extends StatelessWidget {
   final int id;
-  PageController pc;
-  TextEditingController messageContentController = TextEditingController()
-    ..addListener(() {});
+  final PageController pc;
+  // ..addListener(() {});
   MessageScreen2({@required this.id, this.pc});
   @override
   Widget build(BuildContext context) {
@@ -208,35 +208,57 @@ class MessageScreen2 extends StatelessWidget {
                 }),
           ),
         ),
-        Container(
-          color: Colors.white,
-          height: 56,
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              IconButton(icon: Icon(Icons.add_circle), onPressed: () {}),
-              Expanded(
-                  child: TextField(
-                controller: messageContentController,
-                // maxLines: 2,
-              )),
-              IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: () {
-                    if (messageContentController.text.isNotEmpty) {
-                      bloc.add(
-                          SendMessages(content: messageContentController.text));
-                      messageContentController.clear();
-                    } else if (messageContentController.text.isEmpty) {
-                      Scaffold.of(context).showSnackBar(SnackBar(
-                        content: Text('Empty'),
-                      ));
-                    }
-                  }),
-            ],
-          ),
-        ),
+        MessageBox()
       ],
+    );
+  }
+}
+
+class MessageBox extends StatefulWidget {
+  @override
+  _MessageBoxState createState() => _MessageBoxState();
+}
+
+class _MessageBoxState extends State<MessageBox> {
+  TextEditingController messageContentController;
+  MessagingBloc bloc;
+  @override
+  void initState() {
+    messageContentController = TextEditingController();
+    bloc = BlocProvider.of<MessagingBloc>(context);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      height: 56,
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          IconButton(icon: Icon(Icons.add_circle), onPressed: () {}),
+          Expanded(
+              child: TextField(
+            controller: messageContentController,
+            // keyboardType: ,
+            // maxLines: 2,
+          )),
+          IconButton(
+              icon: Icon(Icons.send),
+              onPressed: () {
+                if (messageContentController.text.isNotEmpty) {
+                  bloc.add(
+                      SendMessages(content: messageContentController.text));
+                  messageContentController.clear();
+                } else if (messageContentController.text.isEmpty) {
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text('Empty'),
+                  ));
+                }
+              }),
+        ],
+      ),
     );
   }
 }
@@ -292,8 +314,9 @@ class MessageScreen extends StatelessWidget {
 
 class ContactPage extends StatelessWidget {
   ContactPage({this.pc});
+
   final PageController pc;
-  Widget _tileCard(context, DocumentSnapshot document) {
+  Widget _tileCard(context, document) {
     var bloc = BlocProvider.of<MessagingBloc>(context);
     return Column(
       children: <Widget>[
@@ -311,27 +334,36 @@ class ContactPage extends StatelessWidget {
     );
   }
 
+  // bool validate() {
+
+  //   return tec.text.isEmpty;
+  // }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: SearchButton(),
-      body: StreamBuilder(
-          stream: Firestore.instance.collection('users').snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+    return BlocProvider<contact.ContactBloc>(
+        create: (context) =>
+            contact.ContactBloc(RepositoryProvider.of<FirestoreRepo>(context))
+              ..add(contact.Initialize()),
+        child: Scaffold(
+          floatingActionButton: SearchButton(),
+          body: BlocBuilder<contact.ContactBloc, contact.ContactState>(
+              builder: (context, state) {
+            if (state is contact.ContactInitial) {
               return CircularProgressIndicator();
             }
-            if (snapshot.hasData) {
+            if (state is contact.Loaded) {
+              print(state.data);
               return ListView.builder(
                 itemBuilder: (context, i) {
-                  return _tileCard(context, snapshot.data.documents[i]);
+                  return _tileCard(context, state.data[i]);
                 },
-                itemCount: snapshot.data.documents.length,
+                itemCount: state.data.length,
               );
             }
             return CircularProgressIndicator();
           }),
-    );
+        ));
   }
 }
 
@@ -344,7 +376,21 @@ class _SearchButtonState extends State<SearchButton> {
   TextEditingController tec = TextEditingController();
   FocusNode searchNode = FocusNode();
   bool open = false;
+  contact.ContactBloc cbloc;
   double width = 0.0;
+  @override
+  void initState() {
+    tec.addListener(() {
+      _changedQuery();
+    });
+    cbloc = BlocProvider.of<contact.ContactBloc>(context);
+    super.initState();
+  }
+
+  void _changedQuery() {
+    cbloc.add(contact.Search(tec.text));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(

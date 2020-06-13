@@ -101,6 +101,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         email: email,
         password: password,
       );
+      yield RegisterState.success();
       await _userRepository.setUser(username);
       var email1 = await _userRepository.getUser();
       var data = {

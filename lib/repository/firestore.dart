@@ -1,4 +1,3 @@
-import 'package:aula/bloc/messaging/messaging_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirestoreRepo {
@@ -8,8 +7,9 @@ class FirestoreRepo {
     return user.document().setData(data);
   }
 
-  Stream getUsers() {
-    return user.snapshots();
+  Future<List<DocumentSnapshot>> getUsers() async {
+    var data = await user.getDocuments();
+    return data.documents;
   }
 
   Future<bool> getUsernameAvailability(String inputData) async {
@@ -57,30 +57,30 @@ class FirestoreRepo {
     //   },
     // );
 
-    var data1 = await message
-        .where('participants1', isEqualTo: 'rizalafif84@gmail.com')
-        .getDocuments();
-    var data2 = await message
-        .where('participants2', isEqualTo: 'rizalafif84@gmail.com')
-        .getDocuments();
-    // print(thedata.data);
-    print('Data1');
-    print(data1.documents);
-    print('Data2');
-    print(data2.documents);
-    print('Data3');
-    var newList = (data1.documents + data2.documents).map((e) {
-      if (e['participants1'] == e['participants2']) {
-        return null;
-      }
+    // var data1 = await message
+    //     .where('participants1', isEqualTo: 'rizalafif84@gmail.com')
+    //     .getDocuments();
+    // var data2 = await message
+    //     .where('participants2', isEqualTo: 'rizalafif84@gmail.com')
+    //     .getDocuments();
+    // // print(thedata.data);
+    // print('Data1');
+    // print(data1.documents);
+    // print('Data2');
+    // print(data2.documents);
+    // print('Data3');
+    // var newList = (data1.documents + data2.documents).map((e) {
+    //   if (e['participants1'] == e['participants2']) {
+    //     return null;
+    //   }
 
-      if (e['participants1'] == 'rizalafif84@gmail.com') {
-        return {'idTo': e['participants2']};
-      } else if (e['participants2'] == 'rizalafif84@gmail.com') {
-        return {'idTo': e['participants1']};
-      }
-    }).toList();
-    print(newList);
+    //   if (e['participants1'] == 'rizalafif84@gmail.com') {
+    //     return {'idTo': e['participants2']};
+    //   } else if (e['participants2'] == 'rizalafif84@gmail.com') {
+    //     return {'idTo': e['participants1']};
+    //   }
+    // }).toList();
+    // print(newList);
   }
 
   Future<List<DocumentSnapshot>> getRecent(String s) async {

@@ -67,7 +67,6 @@ class _CourseListHomeState extends State<CourseListHome> {
           children: [
             StackSize(),
             Positioned(top: 0, child: UserDetailsCard()),
-            Positioned(top: 0, child: MenuAppBar(callback: widget.callback)),
             Positioned.directional(
               textDirection: TextDirection.ltr,
               top: 210,
@@ -77,6 +76,7 @@ class _CourseListHomeState extends State<CourseListHome> {
                 child: Grids(),
               ),
             ),
+            MenuAppBar(callback: widget.callback, pc: scrollController),
             ViewControl(scont: scrollController),
             // Positioned(top: (viewControlloffset), child: ViewControl()),
           ],
@@ -106,78 +106,109 @@ class StackSize extends StatelessWidget {
   }
 }
 
-class MenuAppBar extends StatelessWidget {
-  MenuAppBar({this.callback});
+class MenuAppBar extends StatefulWidget {
+  MenuAppBar({this.callback, this.pc});
+  final ScrollController pc;
   final Function callback;
+
+  @override
+  _MenuAppBarState createState() => _MenuAppBarState();
+}
+
+class _MenuAppBarState extends State<MenuAppBar> {
   final color = Colors.white;
+  double top = 0.0, opacity = 0.0;
+  @override
+  void initState() {
+    widget.pc.addListener(() {
+      var off = widget.pc.offset;
+      if (off <= 94) {
+        setState(() {
+          opacity = off != 0.0 ? off / 94 : 0.0;
+        });
+      } else {
+        opacity = 1.0;
+      }
+      setState(() {
+        top = off;
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     var firestoreRepo = RepositoryProvider.of<FirestoreRepo>(context);
     var userRepo = RepositoryProvider.of<UserRepository>(context);
-    return Container(
-      padding: EdgeInsets.fromLTRB(24, 20, 14, 0),
-      width: size.width,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Container(
-            child: InkWell(
-              onTap: callback,
-              child: Icon(Icons.menu, color: color),
+    return Positioned(
+      top: top,
+      child: Container(
+        padding: EdgeInsets.fromLTRB(24, 24, 14, 0),
+        width: size.width,
+        color: Colors.red[900].withOpacity(opacity),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            InkWell(
+              onTap: widget.callback,
+              child: Container(
+                padding: EdgeInsets.all(4),
+                child: Icon(Icons.menu, color: color),
+              ),
             ),
-          ),
-          Row(children: [
-            Stack(
-              children: <Widget>[
-                IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                              builder: (context) => NotificationCentre()));
-                    },
-                    icon: Icon(
-                      Icons.notifications,
-                      color: color,
-                    )),
-                Positioned(
-                    top: 8,
-                    right: 8,
-                    child: CircleAvatar(
-                      radius: 5,
-                      backgroundColor: Colors.red,
-                    ))
-              ],
-            ),
-            Stack(
-              children: <Widget>[
-                IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                              builder: (context) => BlocProvider(
-                                  create: (context) => msgbloc.MessagingBloc(
-                                      firestoreRepo, userRepo)
-                                    ..add(msgbloc.Initialize()),
-                                  child: ChatRoom())));
-                    },
-                    icon: Icon(
-                      Icons.chat_bubble,
-                      color: color,
-                    )),
-                Positioned(
-                    top: 8,
-                    right: 8,
-                    child: CircleAvatar(
-                      radius: 5,
-                      backgroundColor: Colors.red,
-                    ))
-              ],
-            ),
-          ])
-        ],
+            Row(children: [
+              Stack(
+                children: <Widget>[
+                  IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                                builder: (context) => NotificationCentre()));
+                      },
+                      icon: Icon(
+                        Icons.notifications,
+                        color: color,
+                      )),
+                  Positioned(
+                      top: 8,
+                      right: 8,
+                      child: CircleAvatar(
+                        radius: 5,
+                        backgroundColor: Colors.red,
+                      ))
+                ],
+              ),
+              Stack(
+                children: <Widget>[
+                  IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                                builder: (context) => BlocProvider(
+                                    create: (context) => msgbloc.MessagingBloc(
+                                        firestoreRepo, userRepo)
+                                      ..add(msgbloc.Initialize()),
+                                    child: ChatRoom())));
+                      },
+                      icon: Icon(
+                        Icons.chat_bubble,
+                        color: color,
+                      )),
+                  Positioned(
+                      top: 8,
+                      right: 8,
+                      child: CircleAvatar(
+                        radius: 5,
+                        backgroundColor: Colors.red,
+                      ))
+                ],
+              ),
+            ])
+          ],
+        ),
       ),
     );
   }
@@ -196,16 +227,16 @@ class UserDetailsCard extends StatelessWidget {
               borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(48),
                   bottomRight: Radius.circular(48))),
-          padding: EdgeInsets.fromLTRB(18.0, 64.0, 18.0, 16.0),
+          padding: EdgeInsets.fromLTRB(24.0, 64.0, 24.0, 16.0),
           width: width,
-          height: 150,
+          height: 160,
           child: Row(
             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ProfilePict(),
-              Padding(padding: EdgeInsets.only(left: 10)),
+              Padding(padding: EdgeInsets.only(left: 16)),
               Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -550,19 +581,19 @@ class ViewControl extends StatefulWidget {
 }
 
 class _ViewControlState extends State<ViewControl> {
-  var viewControlloffset = 156.0;
+  var viewControlloffset = 166.0;
   int filterVal = 0;
   int sortByVal = 0;
   @override
   void initState() {
     this.widget.scont.addListener(() {
-      if (this.widget.scont.offset >= 124) {
+      if (this.widget.scont.offset >= 90) {
         setState(() {
-          viewControlloffset = this.widget.scont.offset + 24;
+          viewControlloffset = this.widget.scont.offset + 68;
         });
-      } else if (viewControlloffset != 155.0) {
+      } else if (viewControlloffset != 165.0) {
         setState(() {
-          viewControlloffset = 155.0;
+          viewControlloffset = 165.0;
         });
       }
     });
@@ -575,7 +606,7 @@ class _ViewControlState extends State<ViewControl> {
     return Positioned(
       top: viewControlloffset,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 8),
+        padding: EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
           boxShadow: [BoxShadow(offset: Offset(0, 1), blurRadius: 2.0)],
           color: Colors.white,

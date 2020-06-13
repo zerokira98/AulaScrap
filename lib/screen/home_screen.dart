@@ -1,12 +1,9 @@
 import 'package:aula/bloc/authentication_bloc/bloc.dart';
-import 'package:aula/bloc/messaging/messaging_bloc.dart';
 import 'package:aula/screen/calendar_screen.dart';
-import 'package:aula/screen/chat.dart';
+
 import 'package:aula/screen/home_course_list.dart';
-import 'package:aula/screen/notif.dart';
 import 'package:aula/screen/setting_screen.dart';
 import 'package:flare_flutter/flare_actor.dart';
-import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
@@ -36,8 +33,17 @@ class _HomeScreenState extends State<HomeScreen>
     animation = Tween(begin: 0.0, end: 1.0).animate(curve);
     acont.addStatusListener((status) {
       // print(status);
-      setState(() {});
+      if (acont.status != AnimationStatus.completed) {
+        setState(() {});
+      }
     });
+  }
+
+  bool visible() {
+    bool data = acont.status == AnimationStatus.forward ||
+        acont.status == AnimationStatus.reverse;
+    // print(acont.status);
+    return data;
   }
 
   void rotate() {
@@ -56,6 +62,13 @@ class _HomeScreenState extends State<HomeScreen>
         acont.forward();
       });
     }
+  }
+
+  @override
+  void dispose() {
+    acont.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -89,77 +102,6 @@ class _HomeScreenState extends State<HomeScreen>
               ),
             ),
             child: Scaffold(
-              // appBar: AppBar(
-              //   backgroundColor: Colors.blue,
-              //   leading: InkWell(
-              //     onTap: () {
-              //       if (acont.status == AnimationStatus.completed) {
-              //         setState(() {
-              //           acont.reverse();
-              //         });
-              //       } else {
-              //         setState(() {
-              //           acont.forward();
-              //         });
-              //       }
-              //     },
-              //     child: Column(
-              //       mainAxisAlignment: MainAxisAlignment.center,
-              //       children: <Widget>[
-              //         Icon(Icons.menu),
-              //         Text(
-              //           'Menu',
-              //           textScaleFactor: 0.6,
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              //   // title: Text('Home'),
-              //   actions: <Widget>[
-              //     Stack(
-              //       children: <Widget>[
-              //         IconButton(
-              //             onPressed: () {
-              //               Navigator.push(
-              //                   context,
-              //                   CupertinoPageRoute(
-              //                       builder: (context) =>
-              //                           NotificationCentre()));
-              //             },
-              //             icon: Icon(Icons.notifications)),
-              //         Positioned(
-              //             top: 8,
-              //             right: 8,
-              //             child: CircleAvatar(
-              //               radius: 5,
-              //               backgroundColor: Colors.red,
-              //             ))
-              //       ],
-              //     ),
-              //     Stack(
-              //       children: <Widget>[
-              //         IconButton(
-              //             onPressed: () {
-              //               Navigator.push(
-              //                   context,
-              //                   CupertinoPageRoute(
-              //                       builder: (context) => BlocProvider(
-              //                           create: (context) =>
-              //                               MessagingBloc()..add(Initialize()),
-              //                           child: ChatRoom())));
-              //             },
-              //             icon: Icon(Icons.chat_bubble)),
-              //         Positioned(
-              //             top: 8,
-              //             right: 8,
-              //             child: CircleAvatar(
-              //               radius: 5,
-              //               backgroundColor: Colors.red,
-              //             ))
-              //       ],
-              //     ),
-              //   ],
-              // ),
               body: Stack(
                 children: <Widget>[
                   Container(
@@ -167,32 +109,41 @@ class _HomeScreenState extends State<HomeScreen>
                     height: MediaQuery.of(context).size.height,
                   ),
                   Container(
-                    child: PageTransitionSwitcher(
-                      reverse: true,
-                      duration: Duration(milliseconds: 300),
-                      // reverseDuration: Duration(milliseconds: 200),
-                      transitionBuilder: (child, noitamina, noitamina2) {
-                        // return child;
+                    // child: PageTransitionSwitcher(
+                    //   reverse: true,
+                    //   duration: Duration(milliseconds: 300),
+                    //   // reverseDuration: Duration(milliseconds: 200),
+                    //   transitionBuilder: (child, noitamina, noitamina2) {
+                    //     // return child;
 
-                        return SharedAxisTransition(
-                          transitionType: SharedAxisTransitionType.horizontal,
-                          animation: noitamina,
-                          secondaryAnimation: noitamina2,
-                          child: child,
-                        );
-                        // FadeTransition(opacity: noitamina, child: child),
-                      },
-                      child: acont.status == AnimationStatus.forward ||
-                              acont.status == AnimationStatus.reverse
-                          ? Container(
-                              color: Colors.white,
+                    //     return SharedAxisTransition(
+                    //       transitionType: SharedAxisTransitionType.horizontal,
+                    //       animation: noitamina,
+                    //       secondaryAnimation: noitamina2,
+                    //       child: child,
+                    //     );
+                    //     // FadeTransition(opacity: noitamina, child: child),
+                    //   },
+                    child:
+                        // acont.status == AnimationStatus.forward ||
+                        //         acont.status == AnimationStatus.reverse
+                        //     ? Container(
+                        //         color: Colors.white,
+                        //         child: Center(
+                        //           child: Text(''),
+                        //         ),
+                        //       )
+                        // :
+                        Visibility(
+                            visible: !visible(),
+                            replacement: SizedBox.expand(
                               child: Center(
-                                child: Text(''),
+                                child: CircularProgressIndicator(),
                               ),
-                            )
-                          : CourseListHome(callback: onTaps),
-                    ),
+                            ),
+                            child: CourseListHome(callback: onTaps)),
                   ),
+                  // ),
                 ],
               ),
             ),

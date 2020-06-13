@@ -12,7 +12,7 @@ class MessagingBloc extends Bloc<MessagingEvent, MessagingState> {
   MessagingBloc(this.firestore, this.userRepo);
   FirestoreRepo firestore;
   UserRepository userRepo;
-  StreamSubscription streamSubscription;
+  // StreamSubscription streamSubscription;
   @override
   MessagingState get initialState => MessagingInitial();
 
@@ -38,6 +38,7 @@ class MessagingBloc extends Bloc<MessagingEvent, MessagingState> {
         } else if (e['participants2'] == self) {
           return {'idTo': e['participants1']};
         }
+        return null;
       }).toList();
       List<Map> data1 = [
         {

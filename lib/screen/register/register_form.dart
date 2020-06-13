@@ -1,4 +1,3 @@
-import 'package:aula/repository/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aula/bloc/authentication_bloc/bloc.dart';
@@ -19,7 +18,9 @@ class _RegisterFormState extends State<RegisterForm> {
   bool passwordVisibled = false;
 
   bool get isPopulated =>
-      _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty;
+      _emailController.text.isNotEmpty &&
+      _passwordController.text.isNotEmpty &&
+      _usernameController.text.isNotEmpty;
 
   bool isRegisterButtonEnabled(RegisterState state) {
     return state.isFormValid && isPopulated && !state.isSubmitting;
@@ -36,7 +37,6 @@ class _RegisterFormState extends State<RegisterForm> {
 
   @override
   Widget build(BuildContext context) {
-    var repo = RepositoryProvider.of<FirestoreRepo>(context);
     var deviceorient = MediaQuery.of(context).orientation.index;
 
     var sidemargin = deviceorient == 0 ? 0.4 : 0.6;
@@ -50,6 +50,7 @@ class _RegisterFormState extends State<RegisterForm> {
             ..hideCurrentSnackBar()
             ..showSnackBar(
               SnackBar(
+                duration: Duration(seconds: 8),
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -61,41 +62,6 @@ class _RegisterFormState extends State<RegisterForm> {
             );
         }
         if (state.isSuccess) {
-          // showDialog(
-          //   context: context,
-          //   barrierDismissible: false,
-          //   builder: (context) {
-          //     return BlocBuilder<RegisterBloc, RegisterState>(
-          //         bloc: hai,
-          //         builder: (context, state) {
-          //           if (state.isSuccess) {
-          //             return AlertDialog(
-          //               title: Text('Set your username'),
-          //               content:
-          //               actions: <Widget>[
-          //                 FlatButton(
-          //                   child: Text('Ok'),
-          //                   onPressed: () {
-          //                     if (_usernameController.value.text == "") {
-          //                       print("hes going here");
-          //                       showDialog(
-          //                           context: context,
-          //                           builder: (context) => AlertDialog(
-          //                                 content: Text("empty"),
-          //                               ));
-          //                     } else {
-          //                       _submitUsername();
-          //                       Navigator.pop(context);
-          //                     }
-          //                   },
-          //                 ),
-          //               ],
-          //             );
-          //           }
-          //           return Container();
-          //         });
-          //   },
-          // );
           Scaffold.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
@@ -103,7 +69,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Registration Success, logging in...'),
+                    Text('Registration Success, creating profile data...'),
                     Icon(Icons.check),
                   ],
                 ),
@@ -112,6 +78,7 @@ class _RegisterFormState extends State<RegisterForm> {
             );
         }
         if (state.isSuccess2) {
+          Scaffold.of(context).hideCurrentSnackBar();
           BlocProvider.of<AuthenticationBloc>(context).add(LoggedIn());
         }
         if (state.isFailure) {
@@ -157,10 +124,17 @@ class _RegisterFormState extends State<RegisterForm> {
                     child: Form(
                       child: Column(
                           mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: <Widget>[
                             Padding(
-                              padding: EdgeInsets.all(18),
-                              child: Text('Daftar'),
+                              padding: EdgeInsets.fromLTRB(8, 18, 10, 14),
+                              child: Text(
+                                'Daftar',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
                             ),
                             TextFormField(
                               controller: _emailController,
@@ -240,8 +214,8 @@ class _RegisterFormState extends State<RegisterForm> {
                                     child: Text('Login'),
                                     onPressed: () {
                                       _controller.previousPage(
-                                          duration: Duration(milliseconds: 500),
-                                          curve: Curves.easeInOut);
+                                          duration: Duration(milliseconds: 750),
+                                          curve: Curves.ease);
                                     },
                                   ),
                                 )
@@ -281,10 +255,6 @@ class _RegisterFormState extends State<RegisterForm> {
   void _changeUsername() {
     _registerBloc.add(NameChange(username: _usernameController.text));
   }
-
-  // void _submitUsername() {
-  //   _registerBloc.add(NameSubmit(username: _usernameController.text));
-  // }
 
   void _onFormSubmitted() {
     _registerBloc.add(

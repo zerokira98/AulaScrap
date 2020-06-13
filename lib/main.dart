@@ -68,8 +68,16 @@ class MyApp extends StatelessWidget {
             if (state is Authenticated) return HomeScreen();
             if (state is Unauthenticated)
               return SignInUp(
-                  userRepository: userRepository, firestore: firestore);
-            return CircularProgressIndicator();
+                // userRepository: userRepository,
+                // firestore: firestore,
+                fromlogout: state.fromLogOut,
+              );
+            return Column(
+              children: <Widget>[
+                Text('aula'),
+                CircularProgressIndicator(),
+              ],
+            );
           },
         ),
       ),
