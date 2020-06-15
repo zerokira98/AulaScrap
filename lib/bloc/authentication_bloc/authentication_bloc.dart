@@ -38,10 +38,10 @@ class AuthenticationBloc
         final name = await _userRepository.getUserName();
         yield Authenticated(name, email);
       } else {
-        yield Unauthenticated(false);
+        yield Unauthenticated();
       }
     } catch (_) {
-      yield Unauthenticated(false);
+      yield Unauthenticated();
     }
   }
 
@@ -56,6 +56,6 @@ class AuthenticationBloc
     } catch (e) {
       print(e);
     }
-    yield Unauthenticated(true);
+    yield Unauthenticated(fromLogOut: true);
   }
 }

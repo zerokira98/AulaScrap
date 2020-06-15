@@ -20,7 +20,6 @@ class FirestoreRepo {
   }
 
   Stream<QuerySnapshot> getMessage(String person1, String person2) {
-    // Firestore.instance.collectionGroup('message');
     List sortir = [person1, person2];
     sortir.sort();
     var doc = message.document(sortir[0] + '__' + sortir[1]);
@@ -31,7 +30,6 @@ class FirestoreRepo {
   }
 
   sendMessage(String content, String sender, String receiver) async {
-    // Firestore.instance.collectionGroup('message');
     List sortir = [sender, receiver];
     sortir.sort();
     message.document(sortir[0] + '__' + sortir[1])

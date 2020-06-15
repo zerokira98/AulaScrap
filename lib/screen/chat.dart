@@ -168,44 +168,83 @@ class MessageScreen2 extends StatelessWidget {
       children: <Widget>[
         Expanded(
           child: Container(
-            child: StreamBuilder(
-                stream: repo.getMessage(self, target),
-                builder: (context, AsyncSnapshot<QuerySnapshot> snap) {
-                  if (snap.hasData) {
-                    if (snap.data.documents.isEmpty) {
-                      return Text('nodata');
+            child: BlocBuilder(
+                bloc: bloc,
+                builder: (context, state) {
+                  if (state is Complete) {
+                    if (state.messages.isEmpty) {
+                      return Center(child: Text('No Data'));
+                    } else {
+                      print(state.messages[0]['sender'] + 'hi');
+                      return ListView.builder(
+                          reverse: true,
+                          physics: BouncingScrollPhysics(),
+                          itemBuilder: (context, i) {
+                            return Container(
+                                padding: EdgeInsets.all(8),
+                                alignment: state.messages[i]['sender'] == self
+                                    ? Alignment.centerRight
+                                    : Alignment.centerLeft,
+                                child: Container(
+                                  constraints: BoxConstraints(
+                                      maxWidth: size.width * 0.5),
+                                  color: state.messages[i]['sender'] == self
+                                      ? Colors.blue
+                                      : Colors.grey[200],
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
+                                    state.messages[i]['content'],
+                                    style: TextStyle(
+                                        color:
+                                            state.messages[i]['sender'] == self
+                                                ? Colors.white
+                                                : Colors.black),
+                                  ),
+                                ));
+                          },
+                          itemCount: state.messages.length);
                     }
-                    return ListView.builder(
-                        reverse: true,
-                        physics: BouncingScrollPhysics(),
-                        itemBuilder: (context, i) {
-                          return Container(
-                              padding: EdgeInsets.all(8),
-                              alignment:
-                                  snap.data.documents[i]['sender'] == self
-                                      ? Alignment.centerRight
-                                      : Alignment.centerLeft,
-                              child: Container(
-                                constraints:
-                                    BoxConstraints(maxWidth: size.width * 0.5),
-                                color: snap.data.documents[i]['sender'] == self
-                                    ? Colors.blue
-                                    : Colors.grey[200],
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  snap.data.documents[i]['content'],
-                                  style: TextStyle(
-                                      color: snap.data.documents[i]['sender'] ==
-                                              self
-                                          ? Colors.white
-                                          : Colors.black),
-                                ),
-                              ));
-                        },
-                        itemCount: snap.data.documents.length);
                   }
                   return Center(child: CircularProgressIndicator());
                 }),
+            //  StreamBuilder(
+            //     stream: repo.getMessage(self, target),
+            //     builder: (context, AsyncSnapshot<QuerySnapshot> snap) {
+            //       if (snap.hasData) {
+            //         if (snap.data.documents.isEmpty) {
+            //           return Text('nodata');
+            //         }
+            //         return ListView.builder(
+            //             reverse: true,
+            //             physics: BouncingScrollPhysics(),
+            //             itemBuilder: (context, i) {
+            //               return Container(
+            //                   padding: EdgeInsets.all(8),
+            //                   alignment:
+            //                       snap.data.documents[i]['sender'] == self
+            //                           ? Alignment.centerRight
+            //                           : Alignment.centerLeft,
+            //                   child: Container(
+            //                     constraints:
+            //                         BoxConstraints(maxWidth: size.width * 0.5),
+            //                     color: snap.data.documents[i]['sender'] == self
+            //                         ? Colors.blue
+            //                         : Colors.grey[200],
+            //                     padding: EdgeInsets.all(8.0),
+            //                     child: Text(
+            //                       snap.data.documents[i]['content'],
+            //                       style: TextStyle(
+            //                           color: snap.data.documents[i]['sender'] ==
+            //                                   self
+            //                               ? Colors.white
+            //                               : Colors.black),
+            //                     ),
+            //                   ));
+            //             },
+            //             itemCount: snap.data.documents.length);
+            //       }
+            //       return Center(child: CircularProgressIndicator());
+            //     }),
           ),
         ),
         MessageBox()

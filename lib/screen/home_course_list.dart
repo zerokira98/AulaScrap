@@ -69,7 +69,7 @@ class _CourseListHomeState extends State<CourseListHome> {
             Positioned(top: 0, child: UserDetailsCard()),
             Positioned.directional(
               textDirection: TextDirection.ltr,
-              top: 210,
+              top: 220,
               child: Container(
                 padding: EdgeInsets.zero,
                 width: size.width,
@@ -612,47 +612,51 @@ class _ViewControlState extends State<ViewControl> {
           color: Colors.white,
         ),
         width: size.width,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Icon(Icons.filter_list),
-                DropdownButton(
-                    value: filterVal,
-                    items: [
-                      DropdownMenuItem(
-                          child: Text('All(Except Hidden)'), value: 0),
-                      DropdownMenuItem(child: Text('In progress'), value: 1),
-                      DropdownMenuItem(child: Text('Future'), value: 2),
-                      DropdownMenuItem(child: Text('Past'), value: 3),
-                      DropdownMenuItem(child: Text('Starred'), value: 4),
-                      DropdownMenuItem(child: Text('Hidden'), value: 5),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        filterVal = value;
-                      });
-                    }),
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Icon(Icons.sort),
-                DropdownButton(
-                    value: sortByVal,
-                    items: [
-                      DropdownMenuItem(child: Text('Course Name'), value: 0),
-                      DropdownMenuItem(child: Text('Last Accessed'), value: 1),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        sortByVal = value;
-                      });
-                    }),
-              ],
-            ),
-          ],
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Icon(Icons.filter_list),
+                  DropdownButton(
+                      value: filterVal,
+                      items: [
+                        DropdownMenuItem(
+                            child: Text('All(Except Hidden)'), value: 0),
+                        DropdownMenuItem(child: Text('In progress'), value: 1),
+                        DropdownMenuItem(child: Text('Future'), value: 2),
+                        DropdownMenuItem(child: Text('Past'), value: 3),
+                        DropdownMenuItem(child: Text('Starred'), value: 4),
+                        DropdownMenuItem(child: Text('Hidden'), value: 5),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          filterVal = value;
+                        });
+                      }),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Icon(Icons.sort),
+                  DropdownButton(
+                      value: sortByVal,
+                      items: [
+                        DropdownMenuItem(child: Text('Course Name'), value: 0),
+                        DropdownMenuItem(
+                            child: Text('Last Accessed'), value: 1),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          sortByVal = value;
+                        });
+                      }),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

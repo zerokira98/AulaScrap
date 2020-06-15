@@ -27,7 +27,7 @@ class Authenticated extends AuthenticationState {
 
 class Unauthenticated extends AuthenticationState {
   final bool fromLogOut;
-  Unauthenticated(this.fromLogOut);
+  Unauthenticated({bool fromLogOut}) : this.fromLogOut = fromLogOut ?? false;
   @override
   List<Object> get props => [fromLogOut];
 

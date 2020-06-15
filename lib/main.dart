@@ -1,7 +1,6 @@
 import 'package:animations/animations.dart';
 // import 'package:aula/bloc/authentication/authentication_bloc.dart';
 import 'package:aula/bloc/authentication_bloc/bloc.dart';
-// import 'package:aula/bloc/authentication_bloc/authentication_event.dart';
 import 'package:aula/bloc/cardlist/cardlist_bloc.dart';
 import 'package:aula/bloc_delegate.dart';
 import 'package:aula/repository/firestore.dart';
@@ -31,14 +30,11 @@ void main() {
             create: (context) => CardlistBloc()..add(LoadData(5)),
           ),
         ],
-        child: MyApp(userRepository: user, firestore: storage),
+        child: MyApp(),
       )));
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({this.userRepository, this.firestore});
-  final UserRepository userRepository;
-  final FirestoreRepo firestore;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -68,8 +64,6 @@ class MyApp extends StatelessWidget {
             if (state is Authenticated) return HomeScreen();
             if (state is Unauthenticated)
               return SignInUp(
-                // userRepository: userRepository,
-                // firestore: firestore,
                 fromlogout: state.fromLogOut,
               );
             return Column(

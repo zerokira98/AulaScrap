@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:aula/repository/firestore.dart';
 import 'package:aula/repository/user_repository.dart';
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 part 'messaging_event.dart';
@@ -12,14 +13,33 @@ class MessagingBloc extends Bloc<MessagingEvent, MessagingState> {
   MessagingBloc(this.firestore, this.userRepo);
   FirestoreRepo firestore;
   UserRepository userRepo;
-  // StreamSubscription streamSubscription;
+  StreamSubscription streamSubscription;
   @override
   MessagingState get initialState => MessagingInitial();
+
+  @override
+  Future<void> close() {
+    streamSubscription?.cancel();
+    return super.close();
+  }
 
   @override
   Stream<MessagingState> mapEventToState(
     MessagingEvent event,
   ) async* {
+    if (event is UpdateMessage) {
+      var msg = event.msg.documents.map<Map<dynamic, dynamic>>((e) {
+        return {
+          'content': e['content'],
+          'sender': e['sender'],
+        };
+      }).toList();
+      print(msg);
+      yield Complete(
+          messages: msg,
+          sideChat: (state as Complete).sideChat,
+          selectedId: (state as Complete).selectedId);
+    }
     if (event is SendMessages) {
       String senderEmail = await userRepo.getUser();
       var id = (state as Complete).selectedId;
@@ -27,40 +47,15 @@ class MessagingBloc extends Bloc<MessagingEvent, MessagingState> {
           event.content, senderEmail, (state as Complete).sideChat[id]['idTo']);
     }
     if (event is Initialize) {
-      var self = await userRepo.getUser();
-      var recent = await firestore.getRecent(self);
-      var newList = recent.map((e) {
-        if (e['participants1'] == e['participants2']) {
-          return null;
-        }
-        if (e['participants1'] == self) {
-          return {'idTo': e['participants2']};
-        } else if (e['participants2'] == self) {
-          return {'idTo': e['participants1']};
-        }
-        return null;
-      }).toList();
-      List<Map> data1 = [
-        {
-          'idTo': await userRepo.getUser(),
-          // 'isActive': true,
-        },
-      ];
-      List data0 = ['Hello mfs'];
-      List newsideChat;
-      if (newList[0] == null) {
-        print(newList.removeAt(0));
-      }
-      newsideChat = data1 + newList;
-      // print(newsideChat);
-      yield Complete(messages: data0, sideChat: newsideChat, selectedId: 0);
+      yield* _mapInitToState();
     }
-    // if (event is AddSidebar) {}
     if (event is ShowMessages) {
       int loop = 0;
       int selectId = 0;
       bool exist = false;
       List newList = (state as Complete).sideChat;
+      var self = await userRepo.getUser();
+      streamSubscription?.cancel();
       newList.forEach((element) {
         if (element['idTo'] == event.idTo) {
           exist = true;
@@ -68,6 +63,7 @@ class MessagingBloc extends Bloc<MessagingEvent, MessagingState> {
         }
         loop++;
       });
+
       if (exist) {
         yield Complete(
             messages: (state as Complete).messages,
@@ -83,21 +79,45 @@ class MessagingBloc extends Bloc<MessagingEvent, MessagingState> {
             selectedId: (state as Complete).sideChat.length);
         //  _mapShowMessagestoState(event, state, newList);
       }
+
+      streamSubscription =
+          firestore.getMessage(self, event.idTo).listen((event) {
+        add(UpdateMessage(event));
+      });
     }
   }
 
-  // Stream _mapShowMessagestoState(
-  //     ShowMessages event, Complete state, List list) async* {
-  //   streamSubscription?.cancel();
-  //   streamSubscription = firestore
-  //       .getMessage(await userRepo.getUser(), event.idTo)
-  //       .listen((event) {
-  //     add(ShowM
-  //       // Complete(
-  //       //   messages: event,
-  //       //   sideChat: state.sideChat,
-  //       //   selectedId: state.sideChat.length - 1)
-  //         );
-  //   });
-  // }
+  Stream<MessagingState> _mapInitToState() async* {
+    print('here');
+    streamSubscription?.cancel();
+    var self = await userRepo.getUser();
+    var recent = await firestore.getRecent(self);
+    var newList = recent.map((e) {
+      if (e['participants1'] == e['participants2']) {
+        return null;
+      }
+      if (e['participants1'] == self) {
+        return {'idTo': e['participants2']};
+      } else if (e['participants2'] == self) {
+        return {'idTo': e['participants1']};
+      }
+      return null;
+    }).toList();
+    List<Map> data1 = [
+      {
+        'idTo': await userRepo.getUser(),
+      },
+    ];
+
+    List newsideChat;
+    if (newList[0] == null) {
+      print(newList.removeAt(0));
+    }
+    newsideChat = data1 + newList;
+    // print(newsideChat);
+    yield Complete(messages: [], sideChat: newsideChat, selectedId: 0);
+    streamSubscription = firestore.getMessage(self, self).listen((event) {
+      add(UpdateMessage(event));
+    });
+  }
 }

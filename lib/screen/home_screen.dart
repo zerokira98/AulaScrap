@@ -135,6 +135,7 @@ class _HomeScreenState extends State<HomeScreen>
                         //       )
                         // :
                         Visibility(
+                            maintainState: true,
                             visible: !visible(),
                             replacement: SizedBox.expand(
                               child: Center(
