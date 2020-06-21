@@ -156,6 +156,18 @@ class MessageScreen2 extends StatelessWidget {
   final PageController pc;
   // ..addListener(() {});
   MessageScreen2({@required this.id, this.pc});
+  // Widget w = AnimatedList(
+  //   initialItemCount: length,
+  //   itemBuilder: (context, i, ani) {
+  //     return Text(
+  //       state.messages[i]['content'],
+  //       style: TextStyle(
+  //           color: state.messages[i]['sender'] == self
+  //               ? Colors.white
+  //               : Colors.black),
+  //     );
+  //   },
+  // );
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -362,6 +374,8 @@ class ContactPage extends StatelessWidget {
         ListTile(
           onTap: () {
             bloc.add(ShowMessages(idTo: document['email']));
+
+            FocusScope.of(context).unfocus();
             pc.animateToPage(0,
                 duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
           },
@@ -488,11 +502,13 @@ class _SearchButtonState extends State<SearchButton> {
                   width =
                       open ? MediaQuery.of(context).size.width - 96 + 24 : 0.0;
                 });
-                if (open) {
-                  searchNode.requestFocus();
-                } else {
-                  FocusScope.of(context).unfocus();
-                }
+                Future.delayed(Duration(milliseconds: 500), () {
+                  if (open) {
+                    searchNode.requestFocus();
+                  } else {
+                    FocusScope.of(context).unfocus();
+                  }
+                });
               }),
         )
       ],

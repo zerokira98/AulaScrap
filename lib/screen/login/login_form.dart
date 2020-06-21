@@ -225,7 +225,7 @@ class _LoginFormState extends State<LoginForm> {
                                     onPressed: () {
                                       _pcontrol.nextPage(
                                           duration: Duration(milliseconds: 750),
-                                          curve: Curves.easeInOut);
+                                          curve: Curves.ease);
                                     },
                                   ),
                                 )

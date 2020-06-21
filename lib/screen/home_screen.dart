@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:aula/bloc/authentication_bloc/bloc.dart';
 import 'package:aula/screen/calendar_screen.dart';
 
@@ -80,7 +82,9 @@ class _HomeScreenState extends State<HomeScreen>
         endDrawer: Drawer(),
         body: Stack(children: [
           Container(
-            color: Colors.deepPurple,
+            decoration: BoxDecoration(
+                gradient:
+                    LinearGradient(colors: [Colors.deepPurple, Colors.purple])),
             child: FlareActor(
               'res/cloud.flr',
               fit: BoxFit.cover,

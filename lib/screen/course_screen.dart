@@ -8,6 +8,7 @@ class CourseScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
+      bottomNavigationBar: BottomNavBar(),
       // appBar: AppBar(
       //   title: Text('Course Details'),
       //   centerTitle: true,
@@ -194,5 +195,37 @@ class ListItems extends StatelessWidget {
         ),
       ],
     ));
+  }
+}
+
+class BottomNavBar extends StatefulWidget {
+  @override
+  _BottomNavBarState createState() => _BottomNavBarState();
+}
+
+class _BottomNavBarState extends State<BottomNavBar> {
+  int index = 0;
+  @override
+  Widget build(BuildContext context) {
+    return BottomNavigationBar(
+      backgroundColor: Colors.blueGrey[50],
+      type: BottomNavigationBarType.shifting,
+      currentIndex: index,
+      onTap: (i) {
+        setState(() {
+          index = i;
+        });
+      },
+      items: [
+        BottomNavigationBarItem(
+            backgroundColor: Colors.blueGrey[400],
+            icon: Icon(Icons.home),
+            title: Text('Hai')),
+        BottomNavigationBarItem(
+            backgroundColor: Colors.blueGrey[600],
+            icon: Icon(Icons.account_box),
+            title: Text('Participant')),
+      ],
+    );
   }
 }

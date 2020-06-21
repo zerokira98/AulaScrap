@@ -55,9 +55,12 @@ class FirestoreRepo {
     //   },
     // );
 
-    // var data1 = await message
-    //     .where('participants1', isEqualTo: 'rizalafif84@gmail.com')
-    //     .getDocuments();
+    var data1 = message
+        .where('participants1', isEqualTo: 'rizalafif84@gmail.com')
+        .snapshots();
+    data1.listen((event) {
+      print("change" + event.toString());
+    });
     // var data2 = await message
     //     .where('participants2', isEqualTo: 'rizalafif84@gmail.com')
     //     .getDocuments();

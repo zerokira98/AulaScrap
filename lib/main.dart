@@ -66,11 +66,20 @@ class MyApp extends StatelessWidget {
               return SignInUp(
                 fromlogout: state.fromLogOut,
               );
-            return Column(
-              children: <Widget>[
-                Text('aula'),
-                CircularProgressIndicator(),
-              ],
+            return Scaffold(
+              body: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Center(
+                    child: Text(
+                      'aula',
+                      textScaleFactor: 2.0,
+                    ),
+                  ),
+                  CircularProgressIndicator(),
+                ],
+              ),
             );
           },
         ),
