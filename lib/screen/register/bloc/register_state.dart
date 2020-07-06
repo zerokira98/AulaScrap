@@ -69,17 +69,6 @@ class RegisterState {
       isFailure: false,
     );
   }
-  factory RegisterState.success2() {
-    return RegisterState(
-      isEmailValid: true,
-      isPasswordValid: true,
-      isUsernameValid: true,
-      isSubmitting: false,
-      isSuccess: false,
-      isSuccess2: true,
-      isFailure: false,
-    );
-  }
 
   RegisterState update({
     bool isEmailValid,
@@ -128,4 +117,16 @@ class RegisterState {
       isFailure: $isFailure,
     }''';
   }
+}
+
+class Success2 extends RegisterState {
+  Success2();
+
+  final bool isEmailValid = true;
+  final bool isPasswordValid = true;
+  final bool isUsernameValid = true;
+  final bool isSubmitting = false;
+  final bool isSuccess = false;
+  final bool isSuccess2 = true;
+  final bool isFailure = false;
 }

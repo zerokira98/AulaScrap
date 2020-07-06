@@ -8,9 +8,23 @@ abstract class AuthenticationState extends Equatable {
 }
 
 class AuthUninitialized extends AuthenticationState {
+  final String email;
+  final String displayName;
+  AuthUninitialized({this.displayName, this.email});
+  factory AuthUninitialized.initialized(String displayName, String email) {
+    return AuthUninitialized(displayName: displayName, email: email);
+  }
   @override
   String toString() => 'Uninitialized';
 }
+
+// class AuthInitialized extends AuthUninitialized {
+//   final String email;
+//   final String displayName;
+//   AuthInitialized(this.displayName, this.email);
+//   @override
+//   String toString() => 'Initialized';
+// }
 
 class Authenticated extends AuthenticationState {
   final String email;

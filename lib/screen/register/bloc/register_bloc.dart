@@ -66,7 +66,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         'email': '$email',
       };
       await _firestore.setUser(data);
-      yield RegisterState.success2();
+      yield Success2();
     } catch (e) {
       print(e);
     }
@@ -109,7 +109,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         'email': '$email1',
       };
       await _firestore.setUser(data);
-      yield RegisterState.success2();
+      yield Success2();
     } catch (e) {
       print(e);
       yield RegisterState.failure();

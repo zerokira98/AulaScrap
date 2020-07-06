@@ -29,6 +29,5 @@ class UpdateMessage extends MessagingEvent {
   final QuerySnapshot msg;
   UpdateMessage(this.msg);
   @override
-  // TODO: implement props
   List<Object> get props => [msg];
 }

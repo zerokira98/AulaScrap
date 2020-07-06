@@ -20,7 +20,7 @@ class AuthenticationBloc
     AuthenticationEvent event,
   ) async* {
     if (event is AppStarted) {
-      await Future.delayed(Duration(seconds: 5));
+      // await Future.delayed(Duration(seconds: 4));
       yield* _mapAppStartedToState();
     } else if (event is LoggedIn) {
       yield* _mapLoggedInToState();
@@ -36,6 +36,13 @@ class AuthenticationBloc
       if (isSignedIn) {
         final email = await _userRepository.getUser();
         final name = await _userRepository.getUserName();
+        // yield AuthUninitialized.initialized(name, email);
+        await Future.delayed(
+            Duration(
+              seconds: 2,
+            ),
+            () {});
+
         yield Authenticated(name, email);
       } else {
         yield Unauthenticated();

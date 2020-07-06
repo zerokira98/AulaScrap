@@ -9,11 +9,28 @@ abstract class CardlistState extends Equatable {
 class CardlistInitial extends CardlistState {}
 
 class Loaded extends CardlistState {
+  final int currentFilter;
   final double cardSize = 140.0;
-  final List<bool> data;
-  Loaded(this.data);
+  final List<Map> data;
+  const Loaded(this.data, this.currentFilter);
+  Loaded changeFilter(int intFilter) {
+    return copy(currentFilter: intFilter);
+  }
+
+  Loaded hideCard(List data) {
+    return copy(data: data);
+  }
+
+  Loaded changeMenu(List data) {
+    return copy(data: data);
+  }
+
+  Loaded copy({List<Map> data, int currentFilter}) {
+    return Loaded(data ?? this.data, currentFilter ?? this.currentFilter);
+  }
+
   @override
-  List<Object> get props => [data];
+  List<Object> get props => [data, currentFilter];
 }
 
 class Loading extends CardlistState {}

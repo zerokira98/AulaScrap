@@ -2,8 +2,6 @@
 import 'package:aula/bloc/contact/contact_bloc.dart' as contact;
 import 'package:aula/bloc/messaging/messaging_bloc.dart';
 import 'package:aula/repository/firestore.dart';
-import 'package:aula/repository/user_repository.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -55,6 +53,7 @@ class _ChatRoomState extends State<ChatRoom>
         bottom: TabBar(
           labelPadding: EdgeInsets.symmetric(vertical: 12),
           onTap: (i) {
+            FocusScope.of(context).unfocus();
             pc.animateToPage(i,
                 duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
           },
@@ -155,6 +154,7 @@ class MessageScreen2 extends StatelessWidget {
   final int id;
   final PageController pc;
   // ..addListener(() {});
+  var keys = GlobalKey<AnimatedListState>();
   MessageScreen2({@required this.id, this.pc});
   // Widget w = AnimatedList(
   //   initialItemCount: length,
@@ -171,8 +171,6 @@ class MessageScreen2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    var repo = RepositoryProvider.of<FirestoreRepo>(context);
-    var userrepo = RepositoryProvider.of<UserRepository>(context);
     var bloc = BlocProvider.of<MessagingBloc>(context);
     var self = (bloc.state as Complete).sideChat[0]['idTo'];
     var target = (bloc.state as Complete).sideChat[id]['idTo'];
@@ -187,8 +185,8 @@ class MessageScreen2 extends StatelessWidget {
                     if (state.messages.isEmpty) {
                       return Center(child: Text('No Data'));
                     } else {
-                      print(state.messages[0]['sender'] + 'hi');
                       return ListView.builder(
+                          key: keys,
                           reverse: true,
                           physics: BouncingScrollPhysics(),
                           itemBuilder: (context, i) {
@@ -273,11 +271,29 @@ class MessageBox extends StatefulWidget {
 class _MessageBoxState extends State<MessageBox> {
   TextEditingController messageContentController;
   MessagingBloc bloc;
+  FocusNode messageNode = FocusNode();
   @override
   void initState() {
     messageContentController = TextEditingController();
     bloc = BlocProvider.of<MessagingBloc>(context);
     super.initState();
+  }
+
+  void onSubmitted() {
+    if (messageContentController.text.isNotEmpty) {
+      bloc.add(SendMessages(content: messageContentController.text));
+      messageContentController.clear();
+    } else if (messageContentController.text.isEmpty) {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text('Empty'),
+      ));
+    }
+  }
+
+  @override
+  void dispose() {
+    messageNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -291,22 +307,19 @@ class _MessageBoxState extends State<MessageBox> {
           IconButton(icon: Icon(Icons.add_circle), onPressed: () {}),
           Expanded(
               child: TextField(
+            focusNode: messageNode,
             controller: messageContentController,
+            onSubmitted: (data) {
+              onSubmitted();
+              FocusScope.of(context).requestFocus(messageNode);
+            },
             // keyboardType: ,
             // maxLines: 2,
           )),
           IconButton(
               icon: Icon(Icons.send),
               onPressed: () {
-                if (messageContentController.text.isNotEmpty) {
-                  bloc.add(
-                      SendMessages(content: messageContentController.text));
-                  messageContentController.clear();
-                } else if (messageContentController.text.isEmpty) {
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text('Empty'),
-                  ));
-                }
+                onSubmitted();
               }),
         ],
       ),
@@ -314,54 +327,54 @@ class _MessageBoxState extends State<MessageBox> {
   }
 }
 
-class MessageScreen extends StatelessWidget {
-  MessageScreen({
-    this.id,
-  });
+// class MessageScreen extends StatelessWidget {
+//   MessageScreen({
+//     this.id,
+//   });
 
-  final int id;
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Expanded(
-            child: Container(
-          child: SingleChildScrollView(
-            reverse: true,
-            child: Column(
-              children: <Widget>[
-                for (int i = 0; i < 10; i++)
-                  Container(
-                      padding: EdgeInsets.all(8),
-                      color: i % 2 == 0 ? Colors.blue : Colors.white,
-                      alignment: i % 2 == 0
-                          ? Alignment.centerLeft
-                          : Alignment.centerRight,
-                      child: Text(
-                        'gamen $id',
-                        style: TextStyle(
-                            color: i % 2 == 0 ? Colors.white : Colors.black),
-                      ))
-              ],
-            ),
-          ),
-        )),
-        Container(
-          color: Colors.white,
-          height: 56,
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              IconButton(icon: Icon(Icons.add_circle), onPressed: () {}),
-              Expanded(child: TextField()),
-              IconButton(icon: Icon(Icons.send), onPressed: () {}),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
+//   final int id;
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       children: <Widget>[
+//         Expanded(
+//             child: Container(
+//           child: SingleChildScrollView(
+//             reverse: true,
+//             child: Column(
+//               children: <Widget>[
+//                 for (int i = 0; i < 10; i++)
+//                   Container(
+//                       padding: EdgeInsets.all(8),
+//                       color: i % 2 == 0 ? Colors.blue : Colors.white,
+//                       alignment: i % 2 == 0
+//                           ? Alignment.centerLeft
+//                           : Alignment.centerRight,
+//                       child: Text(
+//                         'gamen $id',
+//                         style: TextStyle(
+//                             color: i % 2 == 0 ? Colors.white : Colors.black),
+//                       ))
+//               ],
+//             ),
+//           ),
+//         )),
+//         Container(
+//           color: Colors.white,
+//           height: 56,
+//           child: Row(
+//             mainAxisSize: MainAxisSize.max,
+//             children: <Widget>[
+//               IconButton(icon: Icon(Icons.add_circle), onPressed: () {}),
+//               Expanded(child: TextField()),
+//               IconButton(icon: Icon(Icons.send), onPressed: () {}),
+//             ],
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
 
 class ContactPage extends StatelessWidget {
   ContactPage({this.pc});
@@ -380,6 +393,7 @@ class ContactPage extends StatelessWidget {
                 duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
           },
           title: Text(document['email']),
+          subtitle: Text(document['username']),
           leading: CircleAvatar(),
         ),
         Divider()
@@ -403,7 +417,7 @@ class ContactPage extends StatelessWidget {
           body: BlocBuilder<contact.ContactBloc, contact.ContactState>(
               builder: (context, state) {
             if (state is contact.ContactInitial) {
-              return CircularProgressIndicator();
+              return Center(child: CircularProgressIndicator());
             }
             if (state is contact.Loaded) {
               print(state.data);
@@ -414,7 +428,7 @@ class ContactPage extends StatelessWidget {
                 itemCount: state.data.length,
               );
             }
-            return CircularProgressIndicator();
+            return Center(child: CircularProgressIndicator());
           }),
         ));
   }

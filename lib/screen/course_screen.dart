@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 class CourseScreen extends StatelessWidget {
   CourseScreen(this.i);
   final int i;
+  PageController pgController = PageController();
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
-      bottomNavigationBar: BottomNavBar(),
+      bottomNavigationBar: BottomNavBar(pc: pgController),
       // appBar: AppBar(
       //   title: Text('Course Details'),
       //   centerTitle: true,
@@ -24,13 +25,19 @@ class CourseScreen extends StatelessWidget {
             child: Container(
               height: size.height,
               width: size.width,
-              child: SingleChildScrollView(
-                padding: EdgeInsets.only(top: 140),
-                child: Column(
-                  children: <Widget>[
-                    for (var i = 0; i < 3; i++) CardPerMinggu(),
-                  ],
-                ),
+              child: PageView(
+                controller: pgController,
+                children: <Widget>[
+                  SingleChildScrollView(
+                    padding: EdgeInsets.only(top: 140),
+                    child: Column(
+                      children: <Widget>[
+                        for (var i = 0; i < 3; i++) CardPerMinggu(),
+                      ],
+                    ),
+                  ),
+                  Container(),
+                ],
               ),
             ),
           ),
@@ -199,6 +206,8 @@ class ListItems extends StatelessWidget {
 }
 
 class BottomNavBar extends StatefulWidget {
+  BottomNavBar({this.pc});
+  final PageController pc;
   @override
   _BottomNavBarState createState() => _BottomNavBarState();
 }
@@ -215,6 +224,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
         setState(() {
           index = i;
         });
+        this.widget.pc.animateToPage(i,
+            duration: Duration(milliseconds: 500), curve: Curves.ease);
       },
       items: [
         BottomNavigationBarItem(

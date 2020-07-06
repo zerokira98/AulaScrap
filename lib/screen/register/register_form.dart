@@ -77,7 +77,7 @@ class _RegisterFormState extends State<RegisterForm> {
               ),
             );
         }
-        if (state.isSuccess2) {
+        if (state is Success2) {
           Scaffold.of(context).hideCurrentSnackBar();
           BlocProvider.of<AuthenticationBloc>(context).add(LoggedIn());
         }

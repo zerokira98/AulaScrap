@@ -61,28 +61,30 @@ class _CourseListHomeState extends State<CourseListHome> {
         center: Alignment(-1.0, -1.0),
         radius: 1.8,
       )),
-      child: SingleChildScrollView(
-        controller: scrollController,
-        // physics: ,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            StackSize(),
-            Positioned(top: 0, child: UserDetailsCard()),
-            Positioned.directional(
-              textDirection: TextDirection.ltr,
-              top: 224,
-              child: Container(
-                padding: EdgeInsets.zero,
-                width: size.width,
-                child: Grids(),
-              ),
+      child: Stack(
+        // fit: StackFit.expand,
+        alignment: Alignment.center,
+        children: [
+          // StackSize(),
+
+          Positioned.directional(
+            textDirection: TextDirection.ltr,
+            top: 0,
+            child: Container(
+              padding: EdgeInsets.zero,
+              width: size.width,
+              height: size.height,
+              child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Padding(
+                      padding: EdgeInsets.only(top: 228), child: Grids())),
             ),
-            MenuAppBar(callback: widget.callback, pc: scrollController),
-            ViewControl(scont: scrollController),
-            // Positioned(top: (viewControlloffset), child: ViewControl()),
-          ],
-        ),
+          ),
+          UserDetailsCard(scont: scrollController),
+          MenuAppBar(callback: widget.callback, pc: scrollController),
+          ViewControl(scont: scrollController),
+          // Positioned(top: (viewControlloffset), child: ViewControl()),
+        ],
       ),
     );
   }
@@ -131,9 +133,9 @@ class _MenuAppBarState extends State<MenuAppBar> {
       } else {
         opacity = 1.0;
       }
-      setState(() {
-        top = off;
-      });
+      // setState(() {
+      //   top = off;
+      // });
     });
     super.initState();
   }
@@ -216,79 +218,127 @@ class _MenuAppBarState extends State<MenuAppBar> {
   }
 }
 
-class UserDetailsCard extends StatelessWidget {
+class UserDetailsCard extends StatefulWidget {
+  UserDetailsCard({this.scont});
+  final ScrollController scont;
+
+  @override
+  _UserDetailsCardState createState() => _UserDetailsCardState();
+}
+
+class _UserDetailsCardState extends State<UserDetailsCard> {
+  double pos = 0;
+  @override
+  void initState() {
+    widget.scont.addListener(() {
+      listen();
+    });
+    super.initState();
+  }
+
+  void listen() {
+    if (mounted && widget.scont.offset < 110) {
+      setState(() {
+        pos = -widget.scont.offset / 2.5;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.scont.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(context) {
     var width = MediaQuery.of(context).size.width;
-    return Hero(
-      tag: 'profilecard',
-      child: Center(
-        child: Container(
-          decoration: BoxDecoration(
-              color: Colors.purple,
-              boxShadow: [
-                BoxShadow(
-                  spreadRadius: 0.0,
-                  blurRadius: 8.0,
+    return Positioned(
+      top: pos,
+      child: Hero(
+        tag: 'profilecard',
+        child: Center(
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.purple,
+                boxShadow: [
+                  BoxShadow(
+                    spreadRadius: 0.0,
+                    blurRadius: 8.0,
+                  )
+                ],
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(48),
+                    bottomRight: Radius.circular(48))),
+            padding: EdgeInsets.fromLTRB(24.0, 68.0, 24.0, 8.0),
+            width: width,
+            height: 160,
+            child: Row(
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ProfilePict(),
+                Padding(padding: EdgeInsets.only(left: 16)),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  // mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    FutureBuilder(
+                        future:
+                            context.repository<UserRepository>().getUserName(),
+                        builder: (context, snapshot) {
+                          return Material(
+                            color: Colors.transparent,
+                            child: Text(
+                              snapshot.data ?? '',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          );
+                        }),
+                    Material(
+                      color: Colors.transparent,
+                      child: Text(
+                        'S1 Ekonomi Bisnis',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: Container(
+                      // color: Colors.purple,
+                      ),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      // alignment: Alignment.topCenter,
+                      height: 30,
+                      width: 30,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: IconButton(
+                            iconSize: 14,
+                            icon: Icon(Icons.arrow_forward),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  CupertinoPageRoute(
+                                      builder: (context) => ProfileScreen()));
+                            }),
+                      ),
+                    ),
+                  ],
                 )
               ],
-              borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(48),
-                  bottomRight: Radius.circular(48))),
-          padding: EdgeInsets.fromLTRB(24.0, 68.0, 24.0, 8.0),
-          width: width,
-          height: 160,
-          child: Row(
-            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ProfilePict(),
-              Padding(padding: EdgeInsets.only(left: 16)),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                // mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    'Nama Lengkap',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  Text(
-                    'S1 Ekonomi Bisnis',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
-              Expanded(
-                child: Container(
-                    // color: Colors.purple,
-                    ),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    // alignment: Alignment.topCenter,
-                    height: 30,
-                    width: 30,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    child: IconButton(
-                        iconSize: 14,
-                        icon: Icon(Icons.arrow_forward),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                  builder: (context) => ProfileScreen()));
-                        }),
-                  ),
-                ],
-              )
-            ],
+            ),
           ),
         ),
       ),
@@ -313,7 +363,7 @@ class _ProfilePictState extends State<ProfilePict> {
   Future setup() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var dir = prefs.getString('profile_picture');
-    print(dir);
+    // print(dir);
     return _image = File(dir);
   }
 
@@ -331,8 +381,8 @@ class _ProfilePictState extends State<ProfilePict> {
 
     String appDocPath = appDocDir.path;
     // '/storage/emulated/0/Pictures';
-    print(Permission.values);
-    print(appDir.existsSync());
+    // print(Permission.values);
+    // print(appDir.existsSync());
 
 // copy the file to a new path
     var extensi = (extension(pickedFile.path));
@@ -362,20 +412,23 @@ class _ProfilePictState extends State<ProfilePict> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        print('tapped');
-        getImage();
-      },
-      child: FutureBuilder(
-          // stream: null,
-          future: setup(),
-          builder: (context, snapshot) {
-            return CircleAvatar(
-              backgroundImage: _image != null ? FileImage(_image) : null,
-              radius: 28,
-            );
-          }),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          print('tapped');
+          getImage();
+        },
+        child: FutureBuilder(
+            // stream: null,
+            future: setup(),
+            builder: (context, snapshot) {
+              return CircleAvatar(
+                backgroundImage: _image != null ? FileImage(_image) : null,
+                radius: 28,
+              );
+            }),
+      ),
     );
   }
 }
@@ -398,28 +451,40 @@ class Grids extends StatelessWidget {
           return Column(
             children: state.data
                 .asMap()
-                .map((i, e) => MapEntry(
-                      i,
-                      GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(CupertinoPageRoute(
-                                builder: (context) => CourseScreen(i)));
-                          },
-                          onLongPress: () {
-                            HapticFeedback.vibrate();
-                            SystemSound.play(SystemSoundType.click);
-                          },
-                          onLongPressUp: () {
-                            _cardbloc.add(OpenCard(i));
-                          },
-                          child: Hero(
-                            tag: 'cbanner$i',
-                            child: CourseCard(
-                              index: i,
-                              openMenu: state.data[i],
-                            ),
-                          )),
-                    ))
+                .map((i, e) {
+                  if (state.currentFilter == 5) {
+                    if (state.data[i]['hidden']) {
+                      // return MapEntry(i, Container());
+                    } else {
+                      return MapEntry(i, Container());
+                    }
+                  } else if (state.data[i]['hidden']) {
+                    return MapEntry(i, Container());
+                  }
+
+                  return MapEntry(
+                    i,
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(CupertinoPageRoute(
+                              builder: (context) => CourseScreen(i)));
+                        },
+                        onLongPress: () {
+                          HapticFeedback.vibrate();
+                          SystemSound.play(SystemSoundType.click);
+                        },
+                        onLongPressUp: () {
+                          _cardbloc.add(OpenCard(i));
+                        },
+                        child: Hero(
+                          tag: 'cbanner$i',
+                          child: CourseCard(
+                            index: i,
+                            openMenu: state.data[i]['close'],
+                          ),
+                        )),
+                  );
+                })
                 .values
                 .toList(),
           );
@@ -475,7 +540,32 @@ class CourseCard extends StatelessWidget {
                     Material(
                       color: Colors.transparent,
                       child: IconButton(
-                          icon: Icon(Icons.visibility_off), onPressed: () {}),
+                          icon: Icon(Icons.visibility_off),
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                child: AlertDialog(
+                                  content: Text(
+                                      'Are you sure to hide/unhide this course?'),
+                                  actions: <Widget>[
+                                    MaterialButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('Cancel'),
+                                    ),
+                                    MaterialButton(
+                                      onPressed: () {
+                                        context
+                                            .bloc<CardlistBloc>()
+                                            .add(HideCard(index));
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('Ok'),
+                                    ),
+                                  ],
+                                ));
+                          }),
                     ),
                     Material(
                       color: Colors.transparent,
@@ -610,17 +700,22 @@ class _ViewControlState extends State<ViewControl> {
   @override
   void initState() {
     this.widget.scont.addListener(() {
-      if (this.widget.scont.offset >= 84) {
-        setState(() {
-          viewControlloffset = this.widget.scont.offset + 78;
-        });
-      } else if (viewControlloffset != 170.0) {
-        setState(() {
-          viewControlloffset = 170.0;
-        });
-      }
+      listen();
     });
     super.initState();
+  }
+
+  void listen() {
+    if (this.widget.scont.offset <= 100) {
+      setState(() {
+        viewControlloffset = 172 - this.widget.scont.offset;
+      });
+    }
+    // else if (viewControlloffset >= 64.0) {
+    //   setState(() {
+    //     viewControlloffset = 64.0;
+    //   });
+    // }
   }
 
   @override
@@ -686,6 +781,7 @@ class _ViewControlState extends State<ViewControl> {
                     ],
                     onChanged: (value) {
                       setState(() {
+                        context.bloc<CardlistBloc>().add(ChangeFilter(value));
                         filterVal = value;
                       });
                     }),

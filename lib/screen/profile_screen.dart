@@ -8,14 +8,9 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: BottomNavbar(),
-      body: SafeArea(
-        child: Column(children: [
-          Hero(
-            tag: 'profilecard',
-            child: UserDetailsCard(),
-          ),
-        ]),
-      ),
+      body: Column(children: [
+        UserDetailsCard(),
+      ]),
     );
   }
 }
@@ -50,37 +45,58 @@ class _BottomNavbarState extends State<BottomNavbar> {
 class UserDetailsCard extends StatelessWidget {
   @override
   Widget build(context) {
-    var width = MediaQuery.of(context).size.width * 0.96;
-    return Center(
-      child: Card(
+    var width = MediaQuery.of(context).size.width;
+    return Hero(
+      tag: 'profilecard',
+      child: Center(
         child: Container(
-          alignment: Alignment.center,
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          decoration: BoxDecoration(
+              color: Colors.purple,
+              boxShadow: [
+                BoxShadow(
+                  spreadRadius: 0.0,
+                  blurRadius: 8.0,
+                )
+              ],
+              borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(48),
+                  bottomRight: Radius.circular(48))),
+          padding: EdgeInsets.fromLTRB(24.0, 68.0, 24.0, 8.0),
           width: width,
-          height: 110,
+          height: 160,
           child: Row(
             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              // Padding(padding: EdgeInsets.only(left: 10)),
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  // mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    ProfilePict(),
-                    Text('Nama Lengkap'),
-                    Text('S1 Ekonomi Bisnis'),
-                  ],
-                ),
+              ProfilePict(),
+              Padding(padding: EdgeInsets.only(left: 16)),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                // mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Material(
+                    color: Colors.transparent,
+                    child: Text(
+                      'Nama Lengkap',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  Material(
+                    color: Colors.transparent,
+                    child: Text(
+                      'S1 Ekonomi Bisnis',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
               ),
-              // Expanded(
-              //   child: Container(
-              //       // color: Colors.purple,
-              //       ),
-              // ),
+              Expanded(
+                child: Container(
+                    // color: Colors.purple,
+                    ),
+              ),
               // Column(
               //   mainAxisAlignment: MainAxisAlignment.center,
               //   children: <Widget>[
@@ -92,15 +108,15 @@ class UserDetailsCard extends StatelessWidget {
               //         shape: BoxShape.circle,
               //         color: Theme.of(context).primaryColor,
               //       ),
-              //       child: IconButton(
-              //           iconSize: 14,
-              //           icon: Icon(Icons.arrow_forward),
-              //           onPressed: () {
-              //             Navigator.push(
-              //                 context,
-              //                 CupertinoPageRoute(
-              //                     builder: (context) => ProfileScreen()));
-              //           }),
+              //       // child: IconButton(
+              //       //     iconSize: 14,
+              //       //     icon: Icon(Icons.arrow_forward),
+              //       //     onPressed: () {
+              //       //       Navigator.push(
+              //       //           context,
+              //       //           CupertinoPageRoute(
+              //       //               builder: (context) => ProfileScreen()));
+              //       //     }),
               //     ),
               //   ],
               // )
@@ -131,15 +147,18 @@ class _ProfilePictState extends State<ProfilePict> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        print('tapped');
-        getImage();
-      },
-      child: CircleAvatar(
-        backgroundImage: _image != null ? FileImage(_image) : null,
-        // child: _image != null ? Image.file(_image) : Container(),
-        radius: 28,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          print('tapped');
+          getImage();
+        },
+        child: CircleAvatar(
+          backgroundImage: _image != null ? FileImage(_image) : null,
+          // child: _image != null ? Image.file(_image) : Container(),
+          radius: 28,
+        ),
       ),
     );
   }

@@ -20,3 +20,17 @@ class OpenCard extends CardlistEvent {
   @override
   List<Object> get props => [index];
 }
+
+class HideCard extends CardlistEvent {
+  final int index;
+  HideCard(this.index);
+  @override
+  List<Object> get props => [index];
+}
+
+class ChangeFilter extends CardlistEvent {
+  final int index;
+  ChangeFilter(this.index);
+  @override
+  List<Object> get props => [index];
+}

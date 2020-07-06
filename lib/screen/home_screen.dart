@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width * 0.78;
+    var width = MediaQuery.of(context).size.width * 0.7;
     return Material(
       color: Colors.blueAccent,
       child: Scaffold(
@@ -83,8 +83,14 @@ class _HomeScreenState extends State<HomeScreen>
         body: Stack(children: [
           Container(
             decoration: BoxDecoration(
-                gradient:
-                    LinearGradient(colors: [Colors.deepPurple, Colors.purple])),
+                gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                  Colors.black87,
+                  Colors.deepPurple,
+                  Colors.purple
+                ])),
             child: FlareActor(
               'res/cloud.flr',
               fit: BoxFit.cover,
@@ -178,7 +184,7 @@ class SideBar extends StatelessWidget {
   SideBar({this.animationController});
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width * 0.78;
+    var width = MediaQuery.of(context).size.width * 0.7;
 
     var bloc = BlocProvider.of<AuthenticationBloc>(context);
     return Container(
