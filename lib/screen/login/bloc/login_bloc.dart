@@ -12,10 +12,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc({
     @required UserRepository userRepository,
   })  : assert(userRepository != null),
-        _userRepository = userRepository;
+        _userRepository = userRepository,
+        super(LoginState.empty()) {
+    print('initializes');
+  }
 
-  @override
-  LoginState get initialState => LoginState.empty();
+  // @override
+  // LoginState get initialState => LoginState.empty();
 
   @override
   Stream<Transition<LoginEvent, LoginState>> transformEvents(

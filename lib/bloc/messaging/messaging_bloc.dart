@@ -10,12 +10,10 @@ part 'messaging_event.dart';
 part 'messaging_state.dart';
 
 class MessagingBloc extends Bloc<MessagingEvent, MessagingState> {
-  MessagingBloc(this.firestore, this.userRepo);
   FirestoreRepo firestore;
   UserRepository userRepo;
   StreamSubscription streamSubscription;
-  @override
-  MessagingState get initialState => MessagingInitial();
+  MessagingBloc(this.firestore, this.userRepo) : super(MessagingInitial());
 
   @override
   Future<void> close() {

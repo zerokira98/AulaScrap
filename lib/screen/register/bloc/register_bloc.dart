@@ -18,10 +18,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       : assert(userRepository != null),
         assert(firestore != null),
         _firestore = firestore,
-        _userRepository = userRepository;
-
-  @override
-  RegisterState get initialState => RegisterState.empty();
+        _userRepository = userRepository,
+        super(RegisterState.empty());
 
   @override
   Stream<Transition<RegisterEvent, RegisterState>> transformEvents(

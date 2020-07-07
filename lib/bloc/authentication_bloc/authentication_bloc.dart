@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:aula/bloc/contact/contact_bloc.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:aula/bloc/authentication_bloc/bloc.dart';
@@ -10,10 +11,8 @@ class AuthenticationBloc
 
   AuthenticationBloc({@required UserRepository userRepository})
       : assert(userRepository != null),
-        _userRepository = userRepository;
-
-  @override
-  AuthenticationState get initialState => AuthUninitialized();
+        _userRepository = userRepository,
+        super(AuthUninitialized());
 
   @override
   Stream<AuthenticationState> mapEventToState(

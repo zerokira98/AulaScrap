@@ -9,11 +9,9 @@ part 'contact_state.dart';
 
 class ContactBloc extends Bloc<ContactEvent, ContactState> {
   List data;
-
-  ContactBloc(this.firestore);
-  @override
-  ContactState get initialState => ContactInitial();
   FirestoreRepo firestore;
+
+  ContactBloc(this.firestore) : super(ContactInitial());
   @override
   Stream<ContactState> mapEventToState(
     ContactEvent event,

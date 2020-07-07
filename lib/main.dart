@@ -16,7 +16,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   final UserRepository user = UserRepository();
   final FirestoreRepo storage = FirestoreRepo();
-  BlocSupervisor.delegate = SimpleBlocDelegate();
+  Bloc.observer = SimpleBlocDelegate();
   runApp(MultiRepositoryProvider(
       providers: [
         RepositoryProvider(create: (context) => user),
@@ -100,68 +100,6 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                   );
                 }
                 return Splash(acont: acont);
-                // Stack(
-                //   // crossAxisAlignment: CrossAxisAlignment.center,
-                //   // mainAxisAlignment: MainAxisAlignment.center,
-                //   children: <Widget>[
-                //     Container(
-                //         decoration: BoxDecoration(
-                //           // color: Colors.blue,
-                //           gradient: LinearGradient(
-                //               begin: Alignment.topLeft,
-                //               end: Alignment.bottomRight,
-                //               colors: [
-                //                 Colors.blue[600],
-                //                 Colors.blue[200],
-                //                 Colors.blue[600],
-                //               ]),
-                //         ),
-                //         width: MediaQuery.of(context).size.width,
-                //         height: MediaQuery.of(context).size.height),
-                //     // Transform.rotate(
-                //     //   angle: math.pi / 12,
-                //     //   child: Transform.translate(
-                //     //     offset: Offset(0.0, -20.0),
-                //     //     child: Divider(),
-                //     //   ),
-                //     // ),
-                //     Transform.rotate(
-                //         angle: -math.pi * 0.62,
-                //         child: Transform.translate(
-                //             offset: Offset(-30.0, 0.0),
-                //             child: Container(
-                //               width: 180,
-                //               decoration: BoxDecoration(
-                //                   color: Colors.white,
-                //                   border:
-                //                       Border.all(color: Colors.blue[100])),
-                //               // width: 1200,
-                //             ))),
-                //     Positioned.fill(
-                //       child: Column(
-                //         mainAxisAlignment: MainAxisAlignment.center,
-                //         mainAxisSize: MainAxisSize.max,
-                //         children: <Widget>[
-                //           Center(
-                //             child: Text(
-                //               'Aula',
-                //               textScaleFactor: 3.2,
-                //               style: TextStyle(shadows: [
-                //                 Shadow(
-                //                     color: Colors.blue[100], blurRadius: 4.0)
-                //               ]),
-                //               // textAlign: TextAlign.start,
-                //             ),
-                //           ),
-                //           CircularProgressIndicator(),
-                //         ],
-                //       ),
-                //     ),
-                //     // Expanded(
-                //     //   child: Container(color: Colors.black),
-                //     // ),
-                //   ],
-                // ),
               },
             ),
           ),

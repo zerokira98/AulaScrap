@@ -7,8 +7,7 @@ part 'cardlist_event.dart';
 part 'cardlist_state.dart';
 
 class CardlistBloc extends Bloc<CardlistEvent, CardlistState> {
-  @override
-  CardlistState get initialState => CardlistInitial();
+  CardlistBloc() : super(CardlistInitial());
 
   @override
   Stream<CardlistState> mapEventToState(
