@@ -15,7 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aula/bloc/cardlist/cardlist_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
+// import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
@@ -368,7 +368,7 @@ class _ProfilePictState extends State<ProfilePict> {
   }
 
   Future getImage() async {
-    var str = await Permission.mediaLibrary.request();
+    // var str = await Permission.mediaLibrary.request();
     var pickedFile = await picker.getImage(source: ImageSource.gallery);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (pickedFile == null) return;
@@ -377,7 +377,7 @@ class _ProfilePictState extends State<ProfilePict> {
         await getExternalStorageDirectories(type: StorageDirectory.pictures);
     Directory appDocDir = listAppDocDir[0];
 
-    Directory appDir = Directory('/storage/emulated/0/Downloads/');
+    // Directory appDir = Directory('/storage/emulated/0/Downloads/');
 
     String appDocPath = appDocDir.path;
     // '/storage/emulated/0/Pictures';
@@ -508,180 +508,189 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CardlistBloc, CardlistState>(builder: (context, state) {
-      if (state is Loaded) {
-        return Container(
-          width: MediaQuery.of(context).size.width,
-          height: state.cardSize,
-          child: Stack(
-            children: <Widget>[
-              //Menu at Background
-              AnimatedContainer(
-                duration: Duration(milliseconds: 500),
-                curve: curves,
-                alignment: Alignment(1, 0),
-                transform: Matrix4.identity()
-                  ..translate(openMenu ? 0.0 : 10.0, 0.0, 0.0)
-                  ..rotateZ(-1 * (openMenu ? 0.0 : 10.0) / 600),
-                margin: EdgeInsets.symmetric(vertical: 6, horizontal: 18),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 2.0,
-                        spreadRadius: 2.0),
-                  ],
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Material(
-                      color: Colors.transparent,
-                      child: IconButton(
-                          icon: Icon(Icons.visibility_off),
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                child: AlertDialog(
-                                  content: Text(
-                                      'Are you sure to hide/unhide this course?'),
-                                  actions: <Widget>[
-                                    MaterialButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text('Cancel'),
-                                    ),
-                                    MaterialButton(
-                                      onPressed: () {
-                                        context
-                                            .bloc<CardlistBloc>()
-                                            .add(HideCard(index));
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text('Ok'),
-                                    ),
-                                  ],
-                                ));
-                          }),
-                    ),
-                    Material(
-                      color: Colors.transparent,
-                      child: IconButton(
-                          icon: Icon(Icons.star_border), onPressed: () {}),
-                    ),
-                  ],
-                ),
-              ),
-              //Top Side
-              AnimatedContainer(
+    return AnimatedOpacity(
+      opacity: 1.0,
+      curve: Curves.ease,
+      duration: Duration(seconds: 1),
+      child:
+          BlocBuilder<CardlistBloc, CardlistState>(builder: (context, state) {
+        if (state is Loaded) {
+          return Container(
+            width: MediaQuery.of(context).size.width,
+            height: state.cardSize,
+            child: Stack(
+              children: <Widget>[
+                //Menu at Background
+                AnimatedContainer(
                   duration: Duration(milliseconds: 500),
                   curve: curves,
+                  alignment: Alignment(1, 0),
                   transform: Matrix4.identity()
-                    ..translate(openMenu ? 0.0 : -25.0, 0.0, 0.0),
+                    ..translate(openMenu ? 0.0 : 10.0, 0.0, 0.0)
+                    ..rotateZ(-1 * (openMenu ? 0.0 : 10.0) / 600),
                   margin: EdgeInsets.symmetric(vertical: 6, horizontal: 18),
                   decoration: BoxDecoration(
-                    // boxShadow: [
-                    //   BoxShadow(
-                    //       offset: Offset(-3, -3),
-                    //       color: Colors.black12,
-                    //       blurRadius: 8.0),
-                    //   BoxShadow(
-                    //       offset: Offset(3, 3),
-                    //       color: Colors.black12,
-                    //       blurRadius: 8.0),
-                    // ],
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 2.0,
+                          spreadRadius: 2.0),
+                    ],
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Expanded(
-                        child: Stack(children: [
-                          Container(
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: AssetImage('res/coursebg/image' +
-                                        (index % 2).toString() +
-                                        '.png'),
-                                    fit: BoxFit.cover),
-                                gradient: RadialGradient(
-                                  colors: [Colors.blue[200], Colors.blue[700]],
-                                  center: Alignment(1.0, 1.0),
-                                  radius: 1.8,
-                                ),
-                                borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(16))),
-                          ),
-                          Positioned(
-                            // top: 0,
-                            right: 0,
-                            child: Material(
-                              color: Colors.transparent,
-                              child: IconButton(
-                                onPressed: () {
-                                  context
-                                      .bloc<CardlistBloc>()
-                                      .add(OpenCard(index));
-                                },
-                                icon: Icon(
-                                  Icons.more_vert,
-                                  color: Colors.white,
+                      Material(
+                        color: Colors.transparent,
+                        child: IconButton(
+                            icon: Icon(Icons.visibility_off),
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  child: AlertDialog(
+                                    content: Text(
+                                        'Are you sure to hide/unhide this course?'),
+                                    actions: <Widget>[
+                                      MaterialButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text('Cancel'),
+                                      ),
+                                      MaterialButton(
+                                        onPressed: () {
+                                          context
+                                              .bloc<CardlistBloc>()
+                                              .add(HideCard(index));
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text('Ok'),
+                                      ),
+                                    ],
+                                  ));
+                            }),
+                      ),
+                      Material(
+                        color: Colors.transparent,
+                        child: IconButton(
+                            icon: Icon(Icons.star_border), onPressed: () {}),
+                      ),
+                    ],
+                  ),
+                ),
+                //Top Side
+                AnimatedContainer(
+                    duration: Duration(milliseconds: 500),
+                    curve: curves,
+                    transform: Matrix4.identity()
+                      ..translate(openMenu ? 0.0 : -25.0, 0.0, 0.0),
+                    margin: EdgeInsets.symmetric(vertical: 6, horizontal: 18),
+                    decoration: BoxDecoration(
+                      // boxShadow: [
+                      //   BoxShadow(
+                      //       offset: Offset(-3, -3),
+                      //       color: Colors.black12,
+                      //       blurRadius: 8.0),
+                      //   BoxShadow(
+                      //       offset: Offset(3, 3),
+                      //       color: Colors.black12,
+                      //       blurRadius: 8.0),
+                      // ],
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Expanded(
+                          child: Stack(children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: AssetImage('res/coursebg/image' +
+                                          (index % 2).toString() +
+                                          '.png'),
+                                      fit: BoxFit.cover),
+                                  gradient: RadialGradient(
+                                    colors: [
+                                      Colors.blue[200],
+                                      Colors.blue[700]
+                                    ],
+                                    center: Alignment(1.0, 1.0),
+                                    radius: 1.8,
+                                  ),
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(16))),
+                            ),
+                            Positioned(
+                              // top: 0,
+                              right: 0,
+                              child: Material(
+                                color: Colors.transparent,
+                                child: IconButton(
+                                  onPressed: () {
+                                    context
+                                        .bloc<CardlistBloc>()
+                                        .add(OpenCard(index));
+                                  },
+                                  icon: Icon(
+                                    Icons.more_vert,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Positioned(
-                              left: 8,
-                              bottom: 8,
-                              child: Material(
-                                color: Colors.transparent,
-                                child: Text(
-                                  'Fisika (S1)',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    shadows: [
-                                      Shadow(
-                                        blurRadius: 8,
-                                      ),
-                                    ],
+                            Positioned(
+                                left: 8,
+                                bottom: 8,
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: Text(
+                                    'Fisika (S1)',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      shadows: [
+                                        Shadow(
+                                          blurRadius: 8,
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ))
-                        ]),
-                      ),
-                      //--------------------------------
-                      //Bottom Title ------//
-                      Container(
-                        alignment: Alignment.center,
-                        width: double.infinity,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.vertical(
-                                bottom: Radius.circular(16)),
-                            color: Colors.white),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Text(
-                            '2019Genap - SII213 - Inovasi Sistem Informasi dan Teknologi - S1 - SISTEM INFORMASI - 2017 - kelas I ',
-                            maxLines: 2,
-                            textScaleFactor: 1.1,
-                            textAlign: TextAlign.center,
-                            overflow: TextOverflow.ellipsis,
+                                ))
+                          ]),
+                        ),
+                        //--------------------------------
+                        //Bottom Title ------//
+                        Container(
+                          alignment: Alignment.center,
+                          width: double.infinity,
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.vertical(
+                                  bottom: Radius.circular(16)),
+                              color: Colors.white),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Text(
+                              '2019Genap - SII213 - Inovasi Sistem Informasi dan Teknologi - S1 - SISTEM INFORMASI - 2017 - kelas I ',
+                              maxLines: 2,
+                              textScaleFactor: 1.1,
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  )),
-            ],
-          ),
-        );
-      }
-      return CircularProgressIndicator();
-    });
+                      ],
+                    )),
+              ],
+            ),
+          );
+        }
+        return CircularProgressIndicator();
+      }),
+    );
   }
 }
 

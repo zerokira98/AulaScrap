@@ -94,6 +94,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
             child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
               builder: (context, state) {
                 // if (state is Authenticated) return HomeScreen();
+                var size = MediaQuery.of(context).size;
                 if (state is Unauthenticated) {
                   return SignInUp(
                     fromlogout: state.fromLogOut,
@@ -111,7 +112,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
 
 class Splash extends StatefulWidget {
   final AnimationController acont;
-  Splash({this.acont});
+  final double height;
+  Splash({this.acont, this.height});
   @override
   _SplashState createState() => _SplashState();
 }
@@ -120,13 +122,15 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
   AnimationController acont;
   Animation ani;
   CurvedAnimation curve;
-  Tween<double> twe = Tween<double>(
-    begin: 0.0,
-    end: -80.0,
-  );
+//  double height = widget.height;
+  Tween<double> twe;
   @override
   void initState() {
     acont = this.widget.acont;
+    twe = Tween<double>(
+      begin: 0.0,
+      end: widget.height * -0.2,
+    );
     curve = CurvedAnimation(parent: acont, curve: Curves.ease);
     ani = twe.animate(curve);
     ani.addListener(() {
