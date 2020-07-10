@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:aula/repository/firestore.dart';
+import 'package:aula/repository/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
@@ -49,7 +50,7 @@ class _NotificationCentreState extends State<NotificationCentre>
     ani.addListener(() {
       listener();
     });
-    acont.forward();
+    // acont.forward();
     // acont.repeat(reverse: true);
     super.initState();
   }
@@ -83,16 +84,23 @@ class _NotificationCentreState extends State<NotificationCentre>
             return Center(
               child: InkWell(
                   onTap: () async {
-                    getData();
+                    // getData();
+
+                    String oldurl = await context
+                        .repository<UserRepository>()
+                        .getUserPpUrl();
+                    print((oldurl));
                     // repo.test();
                     // repo.sendMessage('Tes 1 2', 'Candra', 'Afif');
                     // print(await repo.getUsernameAvailability('Rizal'));
                   },
                   child: Card(
-                    child: Text(snapshot.hasData
-                        ? content
-                        // snapshot.data['articles'][0]['content']
-                        : '${ani.value}'),
+                    child: Text(
+                      snapshot.hasData
+                          ? content
+                          // snapshot.data['articles'][0]['content']
+                          : '${ani.value}',
+                    ),
                   )),
             );
           }),

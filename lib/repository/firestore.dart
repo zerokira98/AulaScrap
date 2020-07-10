@@ -1,15 +1,42 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirestoreRepo {
   var user = Firestore.instance.collection('users');
   var message = Firestore.instance.collection('message');
+  Future getUserInfo(String email) {
+    return user.where('email', isEqualTo: email).getDocuments();
+  }
+
   Future setUser(Map data) {
+    data.addAll({
+      'created': FieldValue.serverTimestamp(),
+    });
     return user.document().setData(data);
   }
 
   Future<List<DocumentSnapshot>> getUsers() async {
     var data = await user.getDocuments();
     return data.documents;
+  }
+
+  Future<String> uploadPP(File file, String filename,
+      {String email, String oldUrl}) async {
+    StorageReference storageReference;
+    if (oldUrl != null) {
+      storageReference =
+          await FirebaseStorage.instance.getReferenceFromUrl(oldUrl);
+      var deleteTask = await storageReference.delete();
+    }
+    storageReference = FirebaseStorage.instance.ref().child("images/$filename");
+    final StorageUploadTask uploadTask = storageReference.putFile(file);
+    final StorageTaskSnapshot downloadUrl = (await uploadTask.onComplete);
+    final String url = (await downloadUrl.ref.getDownloadURL());
+    print("URL is $url");
+    return url;
+    // return data.documents;
   }
 
   Future<bool> getUsernameAvailability(String inputData) async {
@@ -54,13 +81,19 @@ class FirestoreRepo {
     //     'participants2': 'Afif',
     //   },
     // );
+    //-----------
 
-    var data1 = message
-        .where('participants1', isEqualTo: 'rizalafif84@gmail.com')
-        .snapshots();
-    data1.listen((event) {
-      print("change" + event.toString());
-    });
+    CollectionReference aabb =
+        user.where('email', isEqualTo: 'rizalafif84@gmail.com').reference();
+    print(aabb.path);
+//------------
+
+    // var data1 = message
+    //     .where('participants1', isEqualTo: 'rizalafif84@gmail.com')
+    //     .snapshots();
+    // data1.listen((event) {
+    //   print("change" + event.toString());
+    // });
     // var data2 = await message
     //     .where('participants2', isEqualTo: 'rizalafif84@gmail.com')
     //     .getDocuments();

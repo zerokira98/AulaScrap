@@ -28,10 +28,14 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   ) {
     // final observableStream = events as Observable<RegisterEvent>;
     final nonDebounceStream = events.where((event) {
-      return (event is! EmailChanged && event is! PasswordChanged);
+      return (event is! EmailChanged &&
+          event is! PasswordChanged &&
+          event is! NameChange);
     });
     final debounceStream = events.where((event) {
-      return (event is EmailChanged || event is PasswordChanged);
+      return (event is EmailChanged ||
+          event is PasswordChanged ||
+          event is NameChange);
     }).debounceTime(Duration(milliseconds: 300));
     return super.transformEvents(
         nonDebounceStream.mergeWith([debounceStream]), transitionFn);
@@ -62,7 +66,9 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       var data = {
         'name': '$username',
         'email': '$email',
+        'image': 'default',
       };
+
       await _firestore.setUser(data);
       yield Success2();
     } catch (e) {

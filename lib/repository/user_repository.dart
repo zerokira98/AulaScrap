@@ -52,6 +52,17 @@ class UserRepository {
     return (await _firebaseAuth.currentUser()).email;
   }
 
+  Future<String> getUserPpUrl() async {
+    return (await _firebaseAuth.currentUser()).photoUrl;
+  }
+
+  Future updatePp(String url) async {
+    UserUpdateInfo info = new UserUpdateInfo();
+    info.photoUrl = url;
+
+    return (await _firebaseAuth.currentUser()).updateProfile(info);
+  }
+
   Future setUser(String username) async {
     UserUpdateInfo info = new UserUpdateInfo();
     info.displayName = username;

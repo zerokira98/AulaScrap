@@ -141,6 +141,13 @@ class _MenuAppBarState extends State<MenuAppBar> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    widget.pc.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     var firestoreRepo = RepositoryProvider.of<FirestoreRepo>(context);
@@ -367,47 +374,68 @@ class _ProfilePictState extends State<ProfilePict> {
     return _image = File(dir);
   }
 
-  Future getImage() async {
+  Future getImage(BuildContext context) async {
     // var str = await Permission.mediaLibrary.request();
     var pickedFile = await picker.getImage(source: ImageSource.gallery);
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (pickedFile == null) return;
+    var fileSize = await File(pickedFile.path).length();
+    if (pickedFile == null || fileSize >= 2000000) {
+      if (fileSize >= 2000000) {
+        print(fileSize);
+        Scaffold.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('File is over 2MB, canceled...'),
+        ));
+      }
+      return;
+    }
+    //upload
+    var username = await context.repository<UserRepository>().getUserName();
+    var oldurl = await context.repository<UserRepository>().getUserPpUrl();
+    var tgl = DateTime.now();
+    String namaFile = tgl.minute.toString() + tgl.second.toString();
+    print(namaFile);
+    String photourl = await context.repository<FirestoreRepo>().uploadPP(
+        File(pickedFile.path), namaFile + '-' + username,
+        oldUrl: oldurl);
+    await context.repository<UserRepository>().updatePp(photourl);
+    setState(() {});
     //get sys dir
-    var listAppDocDir =
-        await getExternalStorageDirectories(type: StorageDirectory.pictures);
-    Directory appDocDir = listAppDocDir[0];
+    // var listAppDocDir =
+    //     await getExternalStorageDirectories(type: StorageDirectory.pictures);
+    // Directory appDocDir = listAppDocDir[0];
 
     // Directory appDir = Directory('/storage/emulated/0/Downloads/');
 
-    String appDocPath = appDocDir.path;
+    // String appDocPath = appDocDir.path;
     // '/storage/emulated/0/Pictures';
     // print(Permission.values);
     // print(appDir.existsSync());
 
 // copy the file to a new path
-    var extensi = (extension(pickedFile.path));
-    try {
-      var tgl = DateTime.now();
-      String fileLama = prefs.getString('profile_picture');
-      print('$fileLama');
-      if (fileLama != null) {
-        if (await File(fileLama).exists()) {
-          await File(fileLama).delete();
-        }
-        prefs.remove('profile_picture');
-      }
-      String namaFile = tgl.minute.toString() + tgl.second.toString();
-      String newDir = '$appDocPath/$namaFile' 'pp$extensi';
-      File newImage = await File(pickedFile.path).copy(newDir);
-      //set shpref
-      prefs.setString('profile_picture', newImage.path);
-      print(newImage.path);
-      setState(() {
-        _image = File(newImage.path);
-      });
-    } catch (e) {
-      print(e);
-    }
+    // var extensi = (extension(pickedFile.path));
+    // try {
+    //   var tgl = DateTime.now();
+    //   String fileLama = prefs.getString('profile_picture');
+    //   print('$fileLama');
+    //   if (fileLama != null) {
+    //     if (await File(fileLama).exists()) {
+    //       await File(fileLama).delete();
+    //     }
+    //     prefs.remove('profile_picture');
+    //   }
+    //   String namaFile = tgl.minute.toString() + tgl.second.toString();
+    //   String newDir = '$appDocPath/$namaFile' 'pp$extensi';
+    //   File newImage = await File(pickedFile.path).copy(newDir);
+    //   //set shpref
+    //   prefs.setString('profile_picture', newImage.path);
+    //   print(newImage.path);
+    //   setState(() {
+    //     _image = File(newImage.path);
+    //   });
+    // } catch (e) {
+    //   print(e);
+    // }
   }
 
   @override
@@ -417,16 +445,24 @@ class _ProfilePictState extends State<ProfilePict> {
       child: InkWell(
         onTap: () {
           print('tapped');
-          getImage();
+          getImage(context);
         },
         child: FutureBuilder(
             // stream: null,
-            future: setup(),
+            future: context.repository<UserRepository>().getUserPpUrl(),
             builder: (context, snapshot) {
-              return CircleAvatar(
-                backgroundImage: _image != null ? FileImage(_image) : null,
-                radius: 28,
-              );
+              if (snapshot.hasData) {
+                return CircleAvatar(
+                  backgroundImage: NetworkImage(snapshot.data),
+                  // _image != null ? FileImage(_image) : null,
+                  radius: 28,
+                );
+              }
+              if (snapshot.hasError) {
+                print(snapshot.error);
+                return CircleAvatar();
+              }
+              return CircleAvatar();
             }),
       ),
     );
@@ -725,6 +761,13 @@ class _ViewControlState extends State<ViewControl> {
     //     viewControlloffset = 64.0;
     //   });
     // }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    this.widget.scont.dispose();
+    super.dispose();
   }
 
   @override

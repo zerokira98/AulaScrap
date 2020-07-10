@@ -55,6 +55,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
+        // fontFamily: 'genuine',
         primarySwatch: Colors.blue,
         pageTransitionsTheme: PageTransitionsTheme(
           builders: {
@@ -77,18 +78,29 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
           child: BlocListener<AuthenticationBloc, AuthenticationState>(
             listener: (context, state) {
               if (state is Authenticated) {
-                // Scaffold.of(context).showSnackBar(SnackBar(
-                //   content: Text('Hello'),
-                // ));
+                Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text('Hello'),
+                ));
                 acont.forward();
                 Future.delayed(Duration(seconds: 2), () {
-                  Navigator.push(context,
+                  Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => HomeScreen()));
                 });
                 // String name = state.displayName;
                 // String email = state.email;
                 // state
                 // context.bloc<AuthenticationBloc>().add(Authenticated(name, email));
+              }
+              if ((state as Unauthenticated).fromLogOut) {
+                Future.delayed(Duration(seconds: 2), () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SignInUp(
+                                fromlogout:
+                                    (state as Unauthenticated).fromLogOut,
+                              )));
+                });
               }
             },
             child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
@@ -100,7 +112,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                     fromlogout: state.fromLogOut,
                   );
                 }
-                return Splash(acont: acont);
+                return Splash(acont: acont, height: size.height);
               },
             ),
           ),
@@ -122,14 +134,14 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
   AnimationController acont;
   Animation ani;
   CurvedAnimation curve;
-//  double height = widget.height;
   Tween<double> twe;
   @override
   void initState() {
+    var height = this.widget.height;
     acont = this.widget.acont;
     twe = Tween<double>(
       begin: 0.0,
-      end: widget.height * -0.2,
+      end: height * -0.2,
     );
     curve = CurvedAnimation(parent: acont, curve: Curves.ease);
     ani = twe.animate(curve);

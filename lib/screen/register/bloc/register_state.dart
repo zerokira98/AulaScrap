@@ -10,7 +10,7 @@ class RegisterState {
   final bool isSuccess2;
   final bool isFailure;
 
-  bool get isFormValid => isEmailValid && isPasswordValid;
+  bool get isFormValid => isEmailValid && isPasswordValid && isUsernameValid;
 
   RegisterState({
     @required this.isEmailValid,
