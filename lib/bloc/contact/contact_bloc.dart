@@ -19,7 +19,7 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
     if (event is Initialize) {
       data = await firestore.getUsers();
       List newdata = data.map((e) {
-        return {'email': e['email'], 'username': e['name']};
+        return {'email': e['email'], 'username': e['name'], 'pp': e['pp']};
         // print(e['email']);
         // return
       }).toList();
@@ -29,7 +29,7 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
     if (event is Search) {
       List newdata = data.map<Map>((e) {
         if (e['email'].toString().split('@')[0].contains(event.query)) {
-          return {'email': e['email'], 'username': e['name']};
+          return {'email': e['email'], 'username': e['name'], 'pp': e['pp']};
         } else
           return null;
       }).toList();

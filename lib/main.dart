@@ -66,53 +66,66 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         ),
       ),
       home: Scaffold(
-        body: PageTransitionSwitcher(
-          duration: Duration(milliseconds: 500),
-          transitionBuilder: (child, noitamina1, noitamina2) {
-            return SharedAxisTransition(
-                animation: noitamina1,
-                secondaryAnimation: noitamina2,
-                transitionType: SharedAxisTransitionType.horizontal,
-                child: child);
-          },
-          child: BlocListener<AuthenticationBloc, AuthenticationState>(
-            listener: (context, state) {
-              if (state is Authenticated) {
-                Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text('Hello'),
-                ));
+        body: BlocListener<AuthenticationBloc, AuthenticationState>(
+          listener: (context, state) {
+            if (state is AuthUninitialized) {
+              if (state.success) {
+                // Scaffold.of(context).showSnackBar(SnackBar(
+                //   content: Text('Hello'),
+                // ));
                 acont.forward();
                 Future.delayed(Duration(seconds: 2), () {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => HomeScreen()));
+                  context.bloc<AuthenticationBloc>().add(LoggedIn());
+                  // Navigator.pushReplacement(context,
+                  //     MaterialPageRoute(builder: (context) => HomeScreen()));
                 });
-                // String name = state.displayName;
-                // String email = state.email;
-                // state
-                // context.bloc<AuthenticationBloc>().add(Authenticated(name, email));
               }
-              if ((state as Unauthenticated).fromLogOut) {
+              if (!state.success) {
+                acont.forward();
                 Future.delayed(Duration(seconds: 2), () {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => SignInUp(
-                                fromlogout:
-                                    (state as Unauthenticated).fromLogOut,
-                              )));
+                  context
+                      .bloc<AuthenticationBloc>()
+                      .add(LoggedOut(initial: true));
                 });
               }
+              // String name = state.displayName;
+              // String email = state.email;
+              // state
+              // context.bloc<AuthenticationBloc>().add(Authenticated(name, email));
+            }
+            // if ((state as Unauthenticated).fromLogOut) {
+            //   Future.delayed(Duration(seconds: 2), () {
+            //     Navigator.pushReplacement(
+            //         context,
+            //         MaterialPageRoute(
+            //             builder: (context) => SignInUp(
+            //                   fromlogout:
+            //                       (state as Unauthenticated).fromLogOut,
+            //                 )));
+            //   });
+            // }
+          },
+          child: PageTransitionSwitcher(
+            duration: Duration(milliseconds: 500),
+            transitionBuilder: (child, noitamina1, noitamina2) {
+              return SharedAxisTransition(
+                  animation: noitamina1,
+                  secondaryAnimation: noitamina2,
+                  transitionType: SharedAxisTransitionType.horizontal,
+                  child: child);
             },
             child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
               builder: (context, state) {
-                // if (state is Authenticated) return HomeScreen();
                 var size = MediaQuery.of(context).size;
+                if (state is Authenticated) return HomeScreen();
                 if (state is Unauthenticated) {
                   return SignInUp(
                     fromlogout: state.fromLogOut,
                   );
                 }
-                return Splash(acont: acont, height: size.height);
+                if (state is AuthUninitialized) {
+                  return Splash(acont: acont, height: size.height);
+                }
               },
             ),
           ),

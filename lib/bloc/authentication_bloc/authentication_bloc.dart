@@ -12,39 +12,42 @@ class AuthenticationBloc
   AuthenticationBloc({@required UserRepository userRepository})
       : assert(userRepository != null),
         _userRepository = userRepository,
-        super(AuthUninitialized());
+        super(AuthUninitialized(displayName: 'init'));
 
   @override
   Stream<AuthenticationState> mapEventToState(
     AuthenticationEvent event,
   ) async* {
     if (event is AppStarted) {
-      // await Future.delayed(Duration(seconds: 4));
+      await Future.delayed(Duration(seconds: 2));
       yield* _mapAppStartedToState();
     } else if (event is LoggedIn) {
       yield* _mapLoggedInToState();
     } else if (event is LoggedOut) {
-      yield* _mapLoggedOutToState();
+      yield* _mapLoggedOutToState(event);
     }
   }
 
   Stream<AuthenticationState> _mapAppStartedToState() async* {
+    // await Future.delayed(
+    //   Duration(
+    //     seconds: 3,
+    //   ),
+    // );
     try {
+      print('here');
       final isSignedIn = await _userRepository.isSignedIn();
 
       if (isSignedIn) {
         final email = await _userRepository.getUser();
         final name = await _userRepository.getUserName();
         // yield AuthUninitialized.initialized(name, email);
-        await Future.delayed(
-            Duration(
-              seconds: 2,
-            ),
-            () {});
 
-        yield Authenticated(name, email);
+        yield AuthUninitialized.initialized(
+            displayName: name, email: email, success: true);
+        // yield Authenticated(name, email);
       } else {
-        yield Unauthenticated();
+        yield AuthUninitialized.initialized(success: false);
       }
     } catch (_) {
       yield Unauthenticated();
@@ -56,12 +59,14 @@ class AuthenticationBloc
         await _userRepository.getUserName(), await _userRepository.getUser());
   }
 
-  Stream<AuthenticationState> _mapLoggedOutToState() async* {
+  Stream<AuthenticationState> _mapLoggedOutToState(
+      AuthenticationEvent event) async* {
+    bool status = !(event as LoggedOut).initial ?? true;
     try {
       _userRepository.signOut();
     } catch (e) {
       print(e);
     }
-    yield Unauthenticated(fromLogOut: true);
+    yield Unauthenticated(fromLogOut: status);
   }
 }

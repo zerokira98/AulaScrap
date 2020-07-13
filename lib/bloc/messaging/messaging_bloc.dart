@@ -90,29 +90,38 @@ class MessagingBloc extends Bloc<MessagingEvent, MessagingState> {
     streamSubscription?.cancel();
     var self = await userRepo.getUser();
     var recent = await firestore.getRecent(self);
-    var newList = recent.map((e) {
-      if (e['participants1'] == e['participants2']) {
-        return null;
-      }
-      if (e['participants1'] == self) {
-        return {'idTo': e['participants2']};
-      } else if (e['participants2'] == self) {
-        return {'idTo': e['participants1']};
-      }
-      return null;
-    }).toList();
+    print(recent.length);
+
     List<Map> data1 = [
       {
         'idTo': await userRepo.getUser(),
+        'pp': await userRepo.getUserPpUrl(),
       },
     ];
-
-    List newsideChat;
-    if (newList[0] == null) {
-      print(newList.removeAt(0));
+    List newsideChat = data1;
+    if (recent.length != 0) {
+      var newList = recent.map((e) {
+        print(e.data);
+        Map data = {'pp': e['pp']};
+        if (e['participants1'] == e['participants2']) {
+          return null;
+        }
+        if (e['participants1'] == self) {
+          data.addAll({'idTo': e['participants2']});
+          return data;
+        } else if (e['participants2'] == self) {
+          data.addAll({'idTo': e['participants1']});
+          return data;
+        }
+        return null;
+      }).toList();
+      if (newList[0] == null) {
+        print(newList.removeAt(0));
+      }
+      newsideChat.add(newList);
     }
-    newsideChat = data1 + newList;
-    // print(newsideChat);
+
+    print(newsideChat);
     yield Complete(messages: [], sideChat: newsideChat, selectedId: 0);
     streamSubscription = firestore.getMessage(self, self).listen((event) {
       add(UpdateMessage(event));

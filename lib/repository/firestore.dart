@@ -10,7 +10,7 @@ class FirestoreRepo {
     return user.where('email', isEqualTo: email).getDocuments();
   }
 
-  Future setUser(Map data) {
+  Future setUser(Map<String, dynamic> data) {
     data.addAll({
       'created': FieldValue.serverTimestamp(),
     });
@@ -83,11 +83,27 @@ class FirestoreRepo {
     // );
     //-----------
 
-    CollectionReference aabb =
-        user.where('email', isEqualTo: 'rizalafif84@gmail.com').reference();
-    print(aabb.path);
+    // CollectionReference aabb =
+    //     user.where('email', isEqualTo: 'rizalafif84@gmail.com').reference();
+    // print(aabb.path);
 //------------
-
+    user
+        .where('email', isEqualTo: 'rizalafif84@gmail.com')
+        .getDocuments()
+        .then((value) {
+      for (var val in value.documents) {
+        print(val.documentID);
+        // if (val.data['email'] == "rizalafif84@gmail.com") {
+        //   print(val.data);
+        //   // user.document(val.documentID).updateData({
+        //   //   'name': 'RizalAfif',
+        //   //   'email': 'rizalafif84@gmail.com',
+        //   //   'pp':
+        //   //       'https://firebasestorage.googleapis.com/v0/b/aula-4a57d.appspot.com/o/images%2F70-RizalAfif?alt=media&token=088684a5-bc3b-45e3-a9ff-e0a44915153c'
+        //   // });
+        // }
+      }
+    });
     // var data1 = message
     //     .where('participants1', isEqualTo: 'rizalafif84@gmail.com')
     //     .snapshots();
@@ -118,12 +134,10 @@ class FirestoreRepo {
   }
 
   Future<List<DocumentSnapshot>> getRecent(String s) async {
-    var data1 = await message
-        .where('participants1', isEqualTo: 'rizalafif84@gmail.com')
-        .getDocuments();
-    var data2 = await message
-        .where('participants2', isEqualTo: 'rizalafif84@gmail.com')
-        .getDocuments();
+    var data1 =
+        await message.where('participants1', isEqualTo: '$s').getDocuments();
+    var data2 =
+        await message.where('participants2', isEqualTo: '$s').getDocuments();
     return (data1.documents + data2.documents);
   }
 

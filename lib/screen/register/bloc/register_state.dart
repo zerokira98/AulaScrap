@@ -2,6 +2,7 @@ import 'package:meta/meta.dart';
 
 @immutable
 class RegisterState {
+  String error;
   final bool isEmailValid;
   final bool isPasswordValid;
   final bool isUsernameValid;
@@ -13,6 +14,7 @@ class RegisterState {
   bool get isFormValid => isEmailValid && isPasswordValid && isUsernameValid;
 
   RegisterState({
+    this.error,
     @required this.isEmailValid,
     @required this.isPasswordValid,
     @required this.isUsernameValid,
@@ -46,8 +48,9 @@ class RegisterState {
     );
   }
 
-  factory RegisterState.failure() {
+  factory RegisterState.failure(String errormsg) {
     return RegisterState(
+      error: errormsg,
       isEmailValid: true,
       isPasswordValid: true,
       isUsernameValid: true,

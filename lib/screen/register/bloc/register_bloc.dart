@@ -108,7 +108,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       yield RegisterState.success();
       await _userRepository.setUser(username);
       var email1 = await _userRepository.getUser();
-      var data = {
+      Map<String, dynamic> data = {
         'name': '$username',
         'email': '$email1',
       };
@@ -116,7 +116,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       yield Success2();
     } catch (e) {
       print(e);
-      yield RegisterState.failure();
+      yield RegisterState.failure(e.toString());
     }
   }
 }

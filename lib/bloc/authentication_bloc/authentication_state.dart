@@ -8,14 +8,20 @@ abstract class AuthenticationState extends Equatable {
 }
 
 class AuthUninitialized extends AuthenticationState {
+  final bool success;
   final String email;
   final String displayName;
-  AuthUninitialized({this.displayName, this.email});
-  factory AuthUninitialized.initialized(String displayName, String email) {
-    return AuthUninitialized(displayName: displayName, email: email);
+  AuthUninitialized({this.displayName, this.email, this.success});
+  factory AuthUninitialized.initialized(
+      {String displayName, String email, bool success}) {
+    return AuthUninitialized(
+        displayName: displayName, email: email, success: success);
   }
   @override
-  String toString() => 'Uninitialized';
+  // TODO: implement props
+  List<Object> get props => [email, displayName, success];
+  @override
+  String toString() => 'AuthUninitialized';
 }
 
 // class AuthInitialized extends AuthUninitialized {

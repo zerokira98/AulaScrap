@@ -93,8 +93,19 @@ class _ChatRoomState extends State<ChatRoom>
                               destinations: [
                                 for (int i = 0; i < state.sideChat.length; i++)
                                   NavigationRailDestination(
-                                    icon: CircleAvatar(),
+                                    icon: CircleAvatar(
+                                      backgroundImage:
+                                          state.sideChat[i]['pp'] != null
+                                              ? NetworkImage(
+                                                  state.sideChat[i]['pp'])
+                                              : null,
+                                    ),
                                     selectedIcon: CircleAvatar(
+                                      backgroundImage:
+                                          state.sideChat[i]['pp'] != null
+                                              ? NetworkImage(
+                                                  state.sideChat[i]['pp'])
+                                              : null,
                                       radius: 24,
                                     ),
                                     label: Text(
@@ -381,6 +392,7 @@ class ContactPage extends StatelessWidget {
 
   final PageController pc;
   Widget _tileCard(context, document) {
+    print(document['pp']);
     var bloc = BlocProvider.of<MessagingBloc>(context);
     return Column(
       children: <Widget>[
@@ -394,7 +406,13 @@ class ContactPage extends StatelessWidget {
           },
           title: Text(document['email']),
           subtitle: Text(document['username']),
-          leading: CircleAvatar(),
+          leading: CircleAvatar(
+            backgroundImage:
+                document['pp'] != null ? NetworkImage(document['pp']) : null,
+            // child: document['pp'] != null
+            //     ? Image.network(document['pp'])
+            //     : Container(),
+          ),
         ),
         Divider()
       ],

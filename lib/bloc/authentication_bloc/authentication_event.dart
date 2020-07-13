@@ -19,6 +19,8 @@ class LoggedIn extends AuthenticationEvent {
 }
 
 class LoggedOut extends AuthenticationEvent {
+  LoggedOut({this.initial});
+  final bool initial;
   @override
   String toString() => 'LoggedOut';
 }

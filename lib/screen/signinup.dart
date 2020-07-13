@@ -161,6 +161,13 @@ class _BackGroundState extends State<BackGround> {
     }
   }
 
+  // @override
+  // void dispose() {
+  //   // TODO: implement dispose
+  //   widget.pcontrol.dispose();
+  //   super.dispose();
+  // }
+
   @override
   Widget build(BuildContext context) {
     devicewidth = MediaQuery.of(context).size.width;

@@ -86,11 +86,11 @@ class _NotificationCentreState extends State<NotificationCentre>
                   onTap: () async {
                     // getData();
 
-                    String oldurl = await context
-                        .repository<UserRepository>()
-                        .getUserPpUrl();
-                    print((oldurl));
-                    // repo.test();
+                    // String oldurl = await context
+                    //     .repository<UserRepository>()
+                    //     .getUserPpUrl();
+                    // print((oldurl));
+                    repo.test();
                     // repo.sendMessage('Tes 1 2', 'Candra', 'Afif');
                     // print(await repo.getUsernameAvailability('Rizal'));
                   },
