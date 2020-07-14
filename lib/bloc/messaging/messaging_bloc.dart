@@ -100,25 +100,33 @@ class MessagingBloc extends Bloc<MessagingEvent, MessagingState> {
     ];
     List newsideChat = data1;
     if (recent.length != 0) {
-      var newList = recent.map((e) {
-        print(e.data);
-        Map data = {'pp': e['pp']};
+      var newList = await Stream.fromIterable(recent).asyncMap((e) async {
+        String pp;
+        // Map data = {'pp': e['pp']};
         if (e['participants1'] == e['participants2']) {
           return null;
         }
         if (e['participants1'] == self) {
-          data.addAll({'idTo': e['participants2']});
-          return data;
+          pp = await firestore.getPpFromEmail(e['participants2']);
+          return {
+            'idTo': e['participants2'],
+            'pp': pp,
+          };
+          // return data;
         } else if (e['participants2'] == self) {
-          data.addAll({'idTo': e['participants1']});
-          return data;
+          pp = await firestore.getPpFromEmail(e['participants1']);
+          return {
+            'idTo': e['participants1'],
+            'pp': pp,
+          };
+          // return data;
         }
         return null;
       }).toList();
-      if (newList[0] == null) {
-        print(newList.removeAt(0));
-      }
-      newsideChat.add(newList);
+      newList.removeWhere((element) => element == null);
+      print(newList);
+
+      newsideChat = newsideChat + newList;
     }
 
     print(newsideChat);

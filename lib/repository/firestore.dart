@@ -10,11 +10,11 @@ class FirestoreRepo {
     return user.where('email', isEqualTo: email).getDocuments();
   }
 
-  Future setUser(Map<String, dynamic> data) {
+  Future setUser(Map<String, dynamic> data, String uid) {
     data.addAll({
       'created': FieldValue.serverTimestamp(),
     });
-    return user.document().setData(data);
+    return user.document(uid).setData(data);
   }
 
   Future<List<DocumentSnapshot>> getUsers() async {
@@ -23,7 +23,7 @@ class FirestoreRepo {
   }
 
   Future<String> uploadPP(File file, String filename,
-      {String email, String oldUrl}) async {
+      {String username, String oldUrl}) async {
     StorageReference storageReference;
     if (oldUrl != null) {
       storageReference =
@@ -34,6 +34,12 @@ class FirestoreRepo {
     final StorageUploadTask uploadTask = storageReference.putFile(file);
     final StorageTaskSnapshot downloadUrl = (await uploadTask.onComplete);
     final String url = (await downloadUrl.ref.getDownloadURL());
+    user.where('name', isEqualTo: username).getDocuments().then((value) async {
+      for (var val in value.documents) {
+        print(val.documentID);
+        await user.document(val.documentID).updateData({'pp': url});
+      }
+    });
     print("URL is $url");
     return url;
     // return data.documents;
@@ -54,6 +60,15 @@ class FirestoreRepo {
         .collection('messages')
         .orderBy('timestamp', descending: true)
         .snapshots();
+  }
+
+  Future<String> getPpFromEmail(String email) async {
+    var doc = await user.where('email', isEqualTo: email).getDocuments();
+    List docList = doc.documents;
+    if (docList.isNotEmpty) {
+      return docList[0]['pp'];
+    }
+    return '';
   }
 
   sendMessage(String content, String sender, String receiver) async {

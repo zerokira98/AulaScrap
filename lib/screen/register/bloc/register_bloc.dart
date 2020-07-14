@@ -54,27 +54,28 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           event.email, event.password, event.username);
     } else if (event is NameChange) {
       yield* _mapUsernameChangedToState(event.username);
-    } else if (event is NameSubmit) {
-      yield* _mapUsernameSubmit(event.username);
     }
+    // else if (event is NameSubmit) {
+    //   yield* _mapUsernameSubmit(event.username);
+    // }
   }
 
-  Stream<RegisterState> _mapUsernameSubmit(String username) async* {
-    try {
-      await _userRepository.setUser(username);
-      var email = await _userRepository.getUser();
-      var data = {
-        'name': '$username',
-        'email': '$email',
-        'image': 'default',
-      };
+  // Stream<RegisterState> _mapUsernameSubmit(String username) async* {
+  //   try {
+  //     await _userRepository.setUser(username);
+  //     var email = await _userRepository.getUser();
+  //     var data = {
+  //       'name': '$username',
+  //       'email': '$email',
+  //       'image': 'default',
+  //     };
 
-      await _firestore.setUser(data);
-      yield Success2();
-    } catch (e) {
-      print(e);
-    }
-  }
+  //     await _firestore.setUser(data);
+  //     yield Success2();
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   Stream<RegisterState> _mapEmailChangedToState(String email) async* {
     yield state.update(
@@ -108,11 +109,13 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       yield RegisterState.success();
       await _userRepository.setUser(username);
       var email1 = await _userRepository.getUser();
+      var uid = await _userRepository.getUserId();
       Map<String, dynamic> data = {
         'name': '$username',
         'email': '$email1',
+        'pp': '',
       };
-      await _firestore.setUser(data);
+      await _firestore.setUser(data, uid);
       yield Success2();
     } catch (e) {
       print(e);

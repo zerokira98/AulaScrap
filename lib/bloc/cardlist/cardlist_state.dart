@@ -10,7 +10,7 @@ class CardlistInitial extends CardlistState {}
 
 class Loaded extends CardlistState {
   final int currentFilter;
-  final double cardSize = 140.0;
+  final double cardSize = 148.0;
   final List<Map> data;
   const Loaded(this.data, this.currentFilter);
   Loaded changeFilter(int intFilter) {
@@ -30,7 +30,14 @@ class Loaded extends CardlistState {
   }
 
   @override
-  List<Object> get props => [data, currentFilter];
+  List<Object> get props =>
+      [] + [currentFilter] + data.map((e) => e['close']).toList();
+
+  @override
+  String toString() {
+    print(props);
+    return super.toString();
+  }
 }
 
 class Loading extends CardlistState {}

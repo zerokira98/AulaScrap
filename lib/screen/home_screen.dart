@@ -236,7 +236,7 @@ class SideBar extends StatelessWidget {
               ),
               ListTile(
                 onTap: () {
-                  bloc.add(LoggedOut());
+                  bloc.add(LoggedOut(initial: false));
                 },
                 leading: Icon(Icons.settings_power),
                 title: Text('Log me out!!'),

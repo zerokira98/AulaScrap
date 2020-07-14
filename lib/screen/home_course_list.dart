@@ -46,7 +46,7 @@ class _CourseListHomeState extends State<CourseListHome> {
 
   @override
   void dispose() {
-    scrollController.dispose();
+    scrollController?.dispose();
     super.dispose();
   }
 
@@ -131,7 +131,11 @@ class _MenuAppBarState extends State<MenuAppBar> {
           opacity = off != 0.0 ? off / 88 : 0.0;
         });
       } else {
-        opacity = 1.0;
+        if (opacity != 1.0) {
+          setState(() {
+            opacity = 1.0;
+          });
+        }
       }
       // setState(() {
       //   top = off;
@@ -143,7 +147,7 @@ class _MenuAppBarState extends State<MenuAppBar> {
   @override
   void dispose() {
     // TODO: implement dispose
-    widget.pc.dispose();
+    widget.pc?.dispose();
     super.dispose();
   }
 
@@ -247,6 +251,10 @@ class _UserDetailsCardState extends State<UserDetailsCard> {
     if (mounted && widget.scont.offset < 110) {
       setState(() {
         pos = -widget.scont.offset / 2.5;
+      });
+    } else {
+      setState(() {
+        pos = -110;
       });
     }
   }
@@ -394,10 +402,10 @@ class _ProfilePictState extends State<ProfilePict> {
     var oldurl = await context.repository<UserRepository>().getUserPpUrl();
     var tgl = DateTime.now();
     String namaFile = tgl.minute.toString() + tgl.second.toString();
-    print(namaFile);
+    // print(namaFile);
     String photourl = await context.repository<FirestoreRepo>().uploadPP(
         File(pickedFile.path), namaFile + '-' + username,
-        oldUrl: oldurl);
+        oldUrl: oldurl, username: username);
     await context.repository<UserRepository>().updatePp(photourl);
     setState(() {});
     //get sys dir
@@ -564,7 +572,7 @@ class CourseCard extends StatelessWidget {
                   transform: Matrix4.identity()
                     ..translate(openMenu ? 0.0 : 10.0, 0.0, 0.0)
                     ..rotateZ(-1 * (openMenu ? 0.0 : 10.0) / 600),
-                  margin: EdgeInsets.symmetric(vertical: 6, horizontal: 18),
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 24),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     boxShadow: [
@@ -622,7 +630,7 @@ class CourseCard extends StatelessWidget {
                     curve: curves,
                     transform: Matrix4.identity()
                       ..translate(openMenu ? 0.0 : -25.0, 0.0, 0.0),
-                    margin: EdgeInsets.symmetric(vertical: 6, horizontal: 18),
+                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 24),
                     decoration: BoxDecoration(
                       // boxShadow: [
                       //   BoxShadow(
@@ -755,6 +763,12 @@ class _ViewControlState extends State<ViewControl> {
       setState(() {
         viewControlloffset = 172 - this.widget.scont.offset;
       });
+    } else {
+      if (viewControlloffset != 72) {
+        setState(() {
+          viewControlloffset = 72;
+        });
+      }
     }
     // else if (viewControlloffset >= 64.0) {
     //   setState(() {
@@ -766,7 +780,7 @@ class _ViewControlState extends State<ViewControl> {
   @override
   void dispose() {
     // TODO: implement dispose
-    this.widget.scont.dispose();
+    this.widget.scont?.dispose();
     super.dispose();
   }
 

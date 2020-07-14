@@ -39,7 +39,7 @@ class CardlistBloc extends Bloc<CardlistEvent, CardlistState> {
   }
 
   Stream<CardlistState> _mapChangeFilter(int ind) async* {
-    yield Loading();
+    // yield Loading();
     yield (state as Loaded).changeFilter(ind);
     // yield Loaded((state as Loaded).data, ind);
   }

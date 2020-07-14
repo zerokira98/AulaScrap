@@ -61,7 +61,7 @@ class AuthenticationBloc
 
   Stream<AuthenticationState> _mapLoggedOutToState(
       AuthenticationEvent event) async* {
-    bool status = !(event as LoggedOut).initial ?? true;
+    bool status = !((event as LoggedOut).initial) ?? true;
     try {
       _userRepository.signOut();
     } catch (e) {

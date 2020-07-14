@@ -154,7 +154,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
     acont = this.widget.acont;
     twe = Tween<double>(
       begin: 0.0,
-      end: height * -0.2,
+      end: (height * -0.15) - 5,
     );
     curve = CurvedAnimation(parent: acont, curve: Curves.ease);
     ani = twe.animate(curve);
@@ -171,7 +171,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
   }
 
   void listener() {
-    curve.value;
+    print(ani.value);
     setState(() {});
   }
 
@@ -190,15 +190,12 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
               // repo.sendMessage('Tes 1 2', 'Candra', 'Afif');
               // print(await repo.getUsernameAvailability('Rizal'));
             },
-            child: Card(
-              child: Text(
-                'Aula',
-                textScaleFactor: 3.2,
-                style: TextStyle(shadows: [
-                  Shadow(color: Colors.blue[100], blurRadius: 4.0)
-                ]),
-                // textAlign: TextAlign.start,
-              ),
+            child: Text(
+              'Aula',
+              textScaleFactor: 3.3,
+              style: TextStyle(
+                  shadows: [Shadow(color: Colors.blue[100], blurRadius: 15.0)]),
+              // textAlign: TextAlign.start,
             ),
           ),
         ),
@@ -220,7 +217,7 @@ class CusPaint extends CustomPainter {
 
     var path2 = Path();
     path2.moveTo(0, size.height * 0.7 + ani.value);
-    path2.relativeLineTo(size.width, -100);
+    path2.relativeLineTo(size.width, -60);
     path2.lineTo(size.width, size.height);
     path2.lineTo(0, size.height);
     path2.close();

@@ -1,4 +1,5 @@
 // import 'package:animations/animations.dart';
+import 'package:animations/animations.dart';
 import 'package:aula/bloc/contact/contact_bloc.dart' as contact;
 import 'package:aula/bloc/messaging/messaging_bloc.dart';
 import 'package:aula/repository/firestore.dart';
@@ -74,10 +75,12 @@ class _ChatRoomState extends State<ChatRoom>
         children: <Widget>[
           BlocBuilder<MessagingBloc, MessagingState>(builder: (context, state) {
             if (state is Complete) {
+              // print(state.sideChat[0]['pp']);
               return Container(
                 child: Row(
                   children: <Widget>[
                     LayoutBuilder(builder: (context, constraint) {
+                      // print(state.sideChat[2]);
                       return SingleChildScrollView(
                         child: ConstrainedBox(
                           constraints: BoxConstraints(
@@ -91,25 +94,25 @@ class _ChatRoomState extends State<ChatRoom>
                                   : null,
                               extended: orient == 0 ? false : true,
                               destinations: [
-                                for (int i = 0; i < state.sideChat.length; i++)
+                                for (int j = 0; j < state.sideChat.length; j++)
                                   NavigationRailDestination(
                                     icon: CircleAvatar(
                                       backgroundImage:
-                                          state.sideChat[i]['pp'] != null
+                                          (state).sideChat[j]['pp'] != null
                                               ? NetworkImage(
-                                                  state.sideChat[i]['pp'])
+                                                  state.sideChat[j]['pp'])
                                               : null,
                                     ),
                                     selectedIcon: CircleAvatar(
                                       backgroundImage:
-                                          state.sideChat[i]['pp'] != null
+                                          state.sideChat[j]['pp'] != null
                                               ? NetworkImage(
-                                                  state.sideChat[i]['pp'])
+                                                  state.sideChat[j]['pp'])
                                               : null,
                                       radius: 24,
                                     ),
                                     label: Text(
-                                      state.sideChat[i]['idTo'] ?? 'hi',
+                                      state.sideChat[j]['idTo'] ?? 'hi',
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 2,
                                     ),
@@ -117,7 +120,7 @@ class _ChatRoomState extends State<ChatRoom>
                                 NavigationRailDestination(
                                   icon: Icon(Icons.add_circle_outline),
                                   selectedIcon: Icon(Icons.add_circle),
-                                  label: Text('Second'),
+                                  label: Text('Baru'),
                                 ),
                               ],
                               selectedIndex: state.selectedId,
@@ -165,7 +168,7 @@ class MessageScreen2 extends StatelessWidget {
   final int id;
   final PageController pc;
   // ..addListener(() {});
-  var keys = GlobalKey<AnimatedListState>();
+  // var keys = GlobalKey<AnimatedListState>();
   MessageScreen2({@required this.id, this.pc});
   // Widget w = AnimatedList(
   //   initialItemCount: length,
@@ -190,6 +193,7 @@ class MessageScreen2 extends StatelessWidget {
         Expanded(
           child: Container(
             child: BlocBuilder(
+                // key: GlobalKey(),
                 bloc: bloc,
                 builder: (context, state) {
                   if (state is Complete) {
@@ -197,7 +201,7 @@ class MessageScreen2 extends StatelessWidget {
                       return Center(child: Text('No Data'));
                     } else {
                       return ListView.builder(
-                          key: keys,
+                          // key: keys,
                           reverse: true,
                           physics: BouncingScrollPhysics(),
                           itemBuilder: (context, i) {
@@ -228,44 +232,6 @@ class MessageScreen2 extends StatelessWidget {
                   }
                   return Center(child: CircularProgressIndicator());
                 }),
-            //  StreamBuilder(
-            //     stream: repo.getMessage(self, target),
-            //     builder: (context, AsyncSnapshot<QuerySnapshot> snap) {
-            //       if (snap.hasData) {
-            //         if (snap.data.documents.isEmpty) {
-            //           return Text('nodata');
-            //         }
-            //         return ListView.builder(
-            //             reverse: true,
-            //             physics: BouncingScrollPhysics(),
-            //             itemBuilder: (context, i) {
-            //               return Container(
-            //                   padding: EdgeInsets.all(8),
-            //                   alignment:
-            //                       snap.data.documents[i]['sender'] == self
-            //                           ? Alignment.centerRight
-            //                           : Alignment.centerLeft,
-            //                   child: Container(
-            //                     constraints:
-            //                         BoxConstraints(maxWidth: size.width * 0.5),
-            //                     color: snap.data.documents[i]['sender'] == self
-            //                         ? Colors.blue
-            //                         : Colors.grey[200],
-            //                     padding: EdgeInsets.all(8.0),
-            //                     child: Text(
-            //                       snap.data.documents[i]['content'],
-            //                       style: TextStyle(
-            //                           color: snap.data.documents[i]['sender'] ==
-            //                                   self
-            //                               ? Colors.white
-            //                               : Colors.black),
-            //                     ),
-            //                   ));
-            //             },
-            //             itemCount: snap.data.documents.length);
-            //       }
-            //       return Center(child: CircularProgressIndicator());
-            //     }),
           ),
         ),
         MessageBox()
@@ -338,63 +304,15 @@ class _MessageBoxState extends State<MessageBox> {
   }
 }
 
-// class MessageScreen extends StatelessWidget {
-//   MessageScreen({
-//     this.id,
-//   });
-
-//   final int id;
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: <Widget>[
-//         Expanded(
-//             child: Container(
-//           child: SingleChildScrollView(
-//             reverse: true,
-//             child: Column(
-//               children: <Widget>[
-//                 for (int i = 0; i < 10; i++)
-//                   Container(
-//                       padding: EdgeInsets.all(8),
-//                       color: i % 2 == 0 ? Colors.blue : Colors.white,
-//                       alignment: i % 2 == 0
-//                           ? Alignment.centerLeft
-//                           : Alignment.centerRight,
-//                       child: Text(
-//                         'gamen $id',
-//                         style: TextStyle(
-//                             color: i % 2 == 0 ? Colors.white : Colors.black),
-//                       ))
-//               ],
-//             ),
-//           ),
-//         )),
-//         Container(
-//           color: Colors.white,
-//           height: 56,
-//           child: Row(
-//             mainAxisSize: MainAxisSize.max,
-//             children: <Widget>[
-//               IconButton(icon: Icon(Icons.add_circle), onPressed: () {}),
-//               Expanded(child: TextField()),
-//               IconButton(icon: Icon(Icons.send), onPressed: () {}),
-//             ],
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }
-
 class ContactPage extends StatelessWidget {
   ContactPage({this.pc});
 
   final PageController pc;
   Widget _tileCard(context, document) {
-    print(document['pp']);
+    // print(document['pp']);
     var bloc = BlocProvider.of<MessagingBloc>(context);
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         ListTile(
           onTap: () {
@@ -408,7 +326,7 @@ class ContactPage extends StatelessWidget {
           subtitle: Text(document['username']),
           leading: CircleAvatar(
             backgroundImage:
-                document['pp'] != null ? NetworkImage(document['pp']) : null,
+                document['pp'] != '' ? NetworkImage(document['pp']) : null,
             // child: document['pp'] != null
             //     ? Image.network(document['pp'])
             //     : Container(),

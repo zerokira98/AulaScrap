@@ -22,5 +22,8 @@ class LoggedOut extends AuthenticationEvent {
   LoggedOut({this.initial});
   final bool initial;
   @override
+  // TODO: implement props
+  List<Object> get props => [initial];
+  @override
   String toString() => 'LoggedOut';
 }

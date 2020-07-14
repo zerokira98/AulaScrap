@@ -61,7 +61,8 @@ class _LoginFormState extends State<LoginForm> {
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Login Failure \n ' + state.errorDetails),
+                    Flexible(
+                        child: Text('Login Failure \n' + state.errorDetails)),
                     Icon(Icons.error)
                   ],
                 ),

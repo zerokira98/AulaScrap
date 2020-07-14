@@ -55,6 +55,18 @@ class _NotificationCentreState extends State<NotificationCentre>
     super.initState();
   }
 
+  String tes() {
+    var repo = RepositoryProvider.of<FirestoreRepo>(context);
+    repo.getPpFromEmail('rizalafif84@gmail.com').whenComplete(() {
+      print('hi');
+    });
+    // .then((value) {
+    //   print(value);
+    //   return value;
+    // });
+    // print(a);
+  }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -83,14 +95,14 @@ class _NotificationCentreState extends State<NotificationCentre>
             }
             return Center(
               child: InkWell(
-                  onTap: () async {
+                  onTap: () {
                     // getData();
-
+                    print(tes());
                     // String oldurl = await context
                     //     .repository<UserRepository>()
                     //     .getUserPpUrl();
                     // print((oldurl));
-                    repo.test();
+                    // repo.test();
                     // repo.sendMessage('Tes 1 2', 'Candra', 'Afif');
                     // print(await repo.getUsernameAvailability('Rizal'));
                   },
