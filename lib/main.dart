@@ -5,7 +5,7 @@ import 'package:aula/bloc/cardlist/cardlist_bloc.dart';
 import 'package:aula/bloc_delegate.dart';
 import 'package:aula/repository/firestore.dart';
 import 'package:aula/repository/user_repository.dart';
-import 'package:aula/screen/home_screen.dart';
+import 'package:aula/screen/home/home_screen.dart';
 import 'package:aula/screen/signinup.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

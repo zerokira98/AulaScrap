@@ -10,7 +10,7 @@ class CardlistInitial extends CardlistState {}
 
 class Loaded extends CardlistState {
   final int currentFilter;
-  final double cardSize = 148.0;
+  final double cardSize = 132.0;
   final List<Map> data;
   const Loaded(this.data, this.currentFilter);
   Loaded changeFilter(int intFilter) {

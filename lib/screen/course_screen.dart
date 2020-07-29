@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class CourseScreen extends StatelessWidget {
   CourseScreen(this.i);
   final int i;
-  PageController pgController = PageController();
+  final PageController pgController = PageController();
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;

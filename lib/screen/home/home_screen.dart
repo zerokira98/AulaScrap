@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:aula/bloc/authentication_bloc/bloc.dart';
 import 'package:aula/screen/calendar_screen.dart';
 
-import 'package:aula/screen/home_course_list.dart';
+import 'package:aula/screen/home/home_course_list.dart';
 import 'package:aula/screen/setting_screen.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
@@ -186,6 +186,7 @@ class SideBar extends StatelessWidget {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width * 0.7;
 
+    // ignore: close_sinks
     var bloc = BlocProvider.of<AuthenticationBloc>(context);
     return Container(
       height: double.infinity,

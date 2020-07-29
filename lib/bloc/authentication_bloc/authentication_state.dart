@@ -18,7 +18,6 @@ class AuthUninitialized extends AuthenticationState {
         displayName: displayName, email: email, success: success);
   }
   @override
-  // TODO: implement props
   List<Object> get props => [email, displayName, success];
   @override
   String toString() => 'AuthUninitialized';

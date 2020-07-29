@@ -43,7 +43,6 @@ class _NotificationCentreState extends State<NotificationCentre>
   );
   @override
   void initState() {
-    // TODO: implement initState
     acont = AnimationController(vsync: this, duration: Duration(seconds: 2));
     curve = CurvedAnimation(parent: acont, curve: Curves.ease);
     ani = twe.animate(curve);
@@ -55,6 +54,7 @@ class _NotificationCentreState extends State<NotificationCentre>
     super.initState();
   }
 
+  // ignore: missing_return
   String tes() {
     var repo = RepositoryProvider.of<FirestoreRepo>(context);
     repo.getPpFromEmail('rizalafif84@gmail.com').whenComplete(() {
@@ -69,7 +69,6 @@ class _NotificationCentreState extends State<NotificationCentre>
 
   @override
   void dispose() {
-    // TODO: implement dispose
     acont.dispose();
     super.dispose();
   }

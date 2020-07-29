@@ -9,6 +9,9 @@ class FirestoreRepo {
   Future getUserInfo(String email) {
     return user.where('email', isEqualTo: email).getDocuments();
   }
+  // Future getUserInfo(String query) {
+  //   return user.where('email', ).getDocuments();
+  // }
 
   Future setUser(Map<String, dynamic> data, String uid) {
     data.addAll({
@@ -28,7 +31,8 @@ class FirestoreRepo {
     if (oldUrl != null) {
       storageReference =
           await FirebaseStorage.instance.getReferenceFromUrl(oldUrl);
-      var deleteTask = await storageReference.delete();
+      // var deleteTask =
+      await storageReference.delete();
     }
     storageReference = FirebaseStorage.instance.ref().child("images/$filename");
     final StorageUploadTask uploadTask = storageReference.putFile(file);

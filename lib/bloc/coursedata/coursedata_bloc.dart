@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:aula/screen/chat.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 

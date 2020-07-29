@@ -2,7 +2,7 @@ import 'package:meta/meta.dart';
 
 @immutable
 class RegisterState {
-  String error;
+  final String error;
   final bool isEmailValid;
   final bool isPasswordValid;
   final bool isUsernameValid;
