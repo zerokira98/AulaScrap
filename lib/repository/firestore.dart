@@ -4,10 +4,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirestoreRepo {
-  var user = Firestore.instance.collection('users');
-  var message = Firestore.instance.collection('message');
+  var user = FirebaseFirestore.instance.collection('users');
+  var message = FirebaseFirestore.instance.collection('message');
   Future getUserInfo(String email) {
-    return user.where('email', isEqualTo: email).getDocuments();
+    return user.where('email', isEqualTo: email).get();
   }
   // Future getUserInfo(String query) {
   //   return user.where('email', ).getDocuments();
@@ -17,31 +17,35 @@ class FirestoreRepo {
     data.addAll({
       'created': FieldValue.serverTimestamp(),
     });
-    return user.document(uid).setData(data);
+    return user.doc(uid).set(data);
   }
 
   Future<List<DocumentSnapshot>> getUsers() async {
-    var data = await user.getDocuments();
-    return data.documents;
+    var data = await user.get();
+    return data.docs;
   }
 
   Future<String> uploadPP(File file, String filename,
       {String username, String oldUrl}) async {
-    StorageReference storageReference;
+    Reference storageReference;
     if (oldUrl != null) {
-      storageReference =
-          await FirebaseStorage.instance.getReferenceFromUrl(oldUrl);
-      // var deleteTask =
+      storageReference = FirebaseStorage.instance.refFromURL(oldUrl);
       await storageReference.delete();
     }
+    // var filePath =
+    //     await FirebaseStorage.instance.ref().child("path").putFile(file).t
     storageReference = FirebaseStorage.instance.ref().child("images/$filename");
-    final StorageUploadTask uploadTask = storageReference.putFile(file);
-    final StorageTaskSnapshot downloadUrl = (await uploadTask.onComplete);
+    final UploadTask uploadTask = storageReference.putFile(file);
+    final TaskSnapshot downloadUrl =
+        await uploadTask.then((s) => s, onError: (e) {
+      print(e);
+    });
+    // await downloadUrl.state
     final String url = (await downloadUrl.ref.getDownloadURL());
-    user.where('name', isEqualTo: username).getDocuments().then((value) async {
-      for (var val in value.documents) {
-        print(val.documentID);
-        await user.document(val.documentID).updateData({'pp': url});
+    user.where('name', isEqualTo: username).get().then((value) async {
+      for (var val in value.docs) {
+        print(val.id);
+        await user.doc(val.id).update({'pp': url});
       }
     });
     print("URL is $url");
@@ -50,16 +54,16 @@ class FirestoreRepo {
   }
 
   Future<bool> getUsernameAvailability(String inputData) async {
-    var query = await user.where('name', isEqualTo: inputData).getDocuments();
-    print(query.documents.isEmpty);
-    return query.documents.isEmpty;
+    var query = await user.where('name', isEqualTo: inputData).get();
+    print(query.docs.isEmpty);
+    return query.docs.isEmpty;
     // print(query.documents[0].data);
   }
 
   Stream<QuerySnapshot> getMessage(String person1, String person2) {
     List sortir = [person1, person2];
     sortir.sort();
-    var doc = message.document(sortir[0] + '__' + sortir[1]);
+    var doc = message.doc(sortir[0] + '__' + sortir[1]);
     return doc
         .collection('messages')
         .orderBy('timestamp', descending: true)
@@ -67,8 +71,8 @@ class FirestoreRepo {
   }
 
   Future<String> getPpFromEmail(String email) async {
-    var doc = await user.where('email', isEqualTo: email).getDocuments();
-    List docList = doc.documents;
+    var doc = await user.where('email', isEqualTo: email).get();
+    List docList = doc.docs;
     if (docList.isNotEmpty) {
       return docList[0]['pp'];
     }
@@ -78,14 +82,14 @@ class FirestoreRepo {
   sendMessage(String content, String sender, String receiver) async {
     List sortir = [sender, receiver];
     sortir.sort();
-    message.document(sortir[0] + '__' + sortir[1])
-      ..setData(
+    message.doc(sortir[0] + '__' + sortir[1])
+      ..set(
         {
           'participants1': sortir[0],
           'participants2': sortir[1],
         },
       )
-      ..collection('messages').document().setData({
+      ..collection('messages').doc().set({
         'content': content,
         'timestamp': FieldValue.serverTimestamp(),
         'sender': sender
@@ -106,12 +110,9 @@ class FirestoreRepo {
     //     user.where('email', isEqualTo: 'rizalafif84@gmail.com').reference();
     // print(aabb.path);
 //------------
-    user
-        .where('email', isEqualTo: 'rizalafif84@gmail.com')
-        .getDocuments()
-        .then((value) {
-      for (var val in value.documents) {
-        print(val.documentID);
+    user.where('email', isEqualTo: 'rizalafif84@gmail.com').get().then((value) {
+      for (var val in value.docs) {
+        print(val.id);
         // if (val.data['email'] == "rizalafif84@gmail.com") {
         //   print(val.data);
         //   // user.document(val.documentID).updateData({
@@ -153,11 +154,9 @@ class FirestoreRepo {
   }
 
   Future<List<DocumentSnapshot>> getRecent(String s) async {
-    var data1 =
-        await message.where('participants1', isEqualTo: '$s').getDocuments();
-    var data2 =
-        await message.where('participants2', isEqualTo: '$s').getDocuments();
-    return (data1.documents + data2.documents);
+    var data1 = await message.where('participants1', isEqualTo: '$s').get();
+    var data2 = await message.where('participants2', isEqualTo: '$s').get();
+    return (data1.docs + data2.docs);
   }
 
   // Future updateMessage() {}

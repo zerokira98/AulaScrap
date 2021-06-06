@@ -10,19 +10,19 @@ class UserRepository {
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
         _googleSignIn = googleSignin ?? GoogleSignIn();
 
-  Future<FirebaseUser> signInWithGoogle() async {
+  Future<User> signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
-    final AuthCredential credential = GoogleAuthProvider.getCredential(
+    final OAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
     await _firebaseAuth.signInWithCredential(credential);
-    return _firebaseAuth.currentUser();
+    return _firebaseAuth.currentUser;
   }
 
-  Future<void> signInWithCredentials(String email, String password) {
+  Future<UserCredential> signInWithCredentials(String email, String password) {
     return _firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,
@@ -44,36 +44,36 @@ class UserRepository {
   }
 
   Future<bool> isSignedIn() async {
-    final currentUser = await _firebaseAuth.currentUser();
+    final currentUser = _firebaseAuth.currentUser;
     return currentUser != null;
   }
 
   Future<String> getUser() async {
-    return (await _firebaseAuth.currentUser()).email;
+    return (_firebaseAuth.currentUser).email;
   }
 
   Future<String> getUserPpUrl() async {
-    return (await _firebaseAuth.currentUser()).photoUrl;
+    return (_firebaseAuth.currentUser).photoURL;
   }
 
   Future updatePp(String url) async {
-    UserUpdateInfo info = new UserUpdateInfo();
-    info.photoUrl = url;
+    // UserUpdateInfo info = new UserUpdateInfo();
+    // info.photoUrl = url;
 
-    return (await _firebaseAuth.currentUser()).updateProfile(info);
+    return (_firebaseAuth.currentUser).updatePhotoURL(url);
   }
 
   Future setUser(String username) async {
-    UserUpdateInfo info = new UserUpdateInfo();
-    info.displayName = username;
-    return (await _firebaseAuth.currentUser()).updateProfile(info);
+    // UserUpdateInfo info = new UserUpdateInfo();
+    // info.displayName = username;
+    return (_firebaseAuth.currentUser).updateDisplayName(username);
   }
 
   Future<String> getUserName() async {
-    return (await _firebaseAuth.currentUser()).displayName;
+    return (_firebaseAuth.currentUser).displayName;
   }
 
   Future<String> getUserId() async {
-    return (await _firebaseAuth.currentUser()).uid;
+    return (_firebaseAuth.currentUser).uid;
   }
 }

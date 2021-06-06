@@ -6,12 +6,26 @@ import 'package:aula/screen/login/login.dart';
 import 'package:aula/screen/register/register.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+class SignInUpHome extends StatelessWidget {
+  final bool fromLogout;
+  const SignInUpHome({Key key, this.fromLogout}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SignInUp(
+        fromLogout: fromLogout,
+      ),
+    );
+  }
+}
+
 class SignInUp extends StatefulWidget {
-  final bool fromlogout;
+  final bool fromLogout;
 
   SignInUp({
     Key key,
-    this.fromlogout,
+    this.fromLogout,
   }) : super(key: key);
 
   @override
@@ -26,7 +40,8 @@ class _LoginScreenState extends State<SignInUp> {
   double devicewidth;
   String welcomeContent;
   SharedPreferences pre;
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  // GlobalKey<ScaffoldMessengerState> _scaffoldKey =
+  //     GlobalKey<ScaffoldMessengerState>();
   @override
   void initState() {
     _firestore = RepositoryProvider.of<FirestoreRepo>(context);
@@ -38,12 +53,12 @@ class _LoginScreenState extends State<SignInUp> {
       firstopen = onValue.getBool('firstopen') ?? true;
       if (firstopen) {
         showDialog(
-            context: _scaffoldKey.currentContext,
+            context: this.context,
             builder: (context) => AlertDialog(
                   content: Text(
                       'data pengguna disimpan di firebase bukan milik []. untuk registrasi silahkan mengisi dengan email&password ngawur.'),
                   actions: <Widget>[
-                    FlatButton(
+                    TextButton(
                       child: Text('Ok, Saya Mengerti'),
                       onPressed: () {
                         onValue.setBool('firstopen', false);
@@ -55,32 +70,34 @@ class _LoginScreenState extends State<SignInUp> {
       }
     });
 
-    welcomeContent = widget.fromlogout == true
+    welcomeContent = widget.fromLogout == true
         ? 'Berhasil logout!'
         : 'Masuk terlebih dahulu';
     _pcontroller = new PageController(
       initialPage: 0,
     );
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => Future.delayed(Duration(seconds: 1), () {
-              _scaffoldKey.currentState.showSnackBar(
-                SnackBar(
-                  duration: Duration(seconds: 3),
-                  content: Text(welcomeContent),
-                ),
-              );
-              Future.delayed(Duration(seconds: 5), () {
-                _scaffoldKey.currentState.hideCurrentSnackBar();
-              });
-            }));
-    Future.delayed(Duration(milliseconds: 2000), () {
-      _pcontroller
-          .animateToPage(1,
-              duration: Duration(milliseconds: 500), curve: Curves.easeInOut)
-          .whenComplete(() {
-        Future.delayed(Duration(milliseconds: 1200), () {
-          _pcontroller.animateToPage(0,
-              duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+    WidgetsBinding.instance.addPostFrameCallback((d) {
+      Future.delayed(Duration(seconds: 3), () {
+        ScaffoldMessenger.of(this.context).showSnackBar(
+          SnackBar(
+            duration: Duration(seconds: 3),
+            content: Text(welcomeContent),
+          ),
+        );
+      });
+      Future.delayed(Duration(seconds: 6), () {
+        ScaffoldMessenger.of(this.context).hideCurrentSnackBar();
+      });
+
+      Future.delayed(Duration(milliseconds: 2000), () {
+        _pcontroller
+            .animateToPage(1,
+                duration: Duration(milliseconds: 500), curve: Curves.easeInOut)
+            .whenComplete(() {
+          Future.delayed(Duration(milliseconds: 1200), () {
+            _pcontroller.animateToPage(0,
+                duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+          });
         });
       });
     });
@@ -89,6 +106,7 @@ class _LoginScreenState extends State<SignInUp> {
   @override
   void dispose() {
     _pcontroller.dispose();
+
     super.dispose();
   }
 
@@ -96,42 +114,40 @@ class _LoginScreenState extends State<SignInUp> {
   Widget build(BuildContext context) {
     devicewidth = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-        key: _scaffoldKey,
-        body: PageView(
-          controller: _pcontroller,
-          children: <Widget>[
-            BlocProvider<LoginBloc>(
-              create: (context) => LoginBloc(userRepository: _userRepository),
-              child: Stack(
-                children: <Widget>[
-                  BackGround(
-                    pcontrol: _pcontroller,
-                    image: 'res/signscreen/login-default.jpg',
-                    align: -0.1,
-                  ),
-                  LoginForm(
-                    pcontrol: _pcontroller,
-                  ),
-                ],
+    return PageView(
+      controller: _pcontroller,
+      children: <Widget>[
+        BlocProvider<LoginBloc>(
+          create: (context) => LoginBloc(userRepository: _userRepository),
+          child: Stack(
+            children: <Widget>[
+              BackGround(
+                pcontrol: _pcontroller,
+                image: 'res/signscreen/login-default.jpg',
+                align: -0.1,
               ),
-              // ),
-            ),
-            BlocProvider<RegisterBloc>(
-                create: (context) => RegisterBloc(
-                    userRepository: _userRepository, firestore: _firestore),
-                child: Stack(
-                  children: <Widget>[
-                    BackGround(
-                      pcontrol: _pcontroller,
-                      image: 'res/signscreen/regist-default.jpg',
-                      align: 1.0,
-                    ),
-                    RegisterForm(pcontrol: _pcontroller),
-                  ],
-                )),
-          ],
-        ));
+              LoginForm(
+                pcontrol: _pcontroller,
+              ),
+            ],
+          ),
+          // ),
+        ),
+        BlocProvider<RegisterBloc>(
+            create: (context) => RegisterBloc(
+                userRepository: _userRepository, firestore: _firestore),
+            child: Stack(
+              children: <Widget>[
+                BackGround(
+                  pcontrol: _pcontroller,
+                  image: 'res/signscreen/regist-default.jpg',
+                  align: 1.0,
+                ),
+                RegisterForm(pcontrol: _pcontroller),
+              ],
+            )),
+      ],
+    );
   }
 }
 

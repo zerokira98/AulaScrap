@@ -54,7 +54,7 @@ class _LoginFormState extends State<LoginForm> {
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state.isFailure) {
-          Scaffold.of(context)
+          ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
               SnackBar(
@@ -71,7 +71,7 @@ class _LoginFormState extends State<LoginForm> {
             );
         }
         if (state.isSubmitting) {
-          Scaffold.of(context)
+          ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
               SnackBar(
@@ -86,7 +86,7 @@ class _LoginFormState extends State<LoginForm> {
             );
         }
         if (state.isSuccess) {
-          Scaffold.of(context)
+          ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
               SnackBar(
@@ -161,9 +161,13 @@ class _LoginFormState extends State<LoginForm> {
                                   labelText: 'Email',
                                 ),
                                 keyboardType: TextInputType.emailAddress,
-                                validator: (_) {
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                validator: (v) {
                                   return !state.isEmailValid
-                                      ? 'Invalid Email'
+                                      ? v.isEmpty
+                                          ? null
+                                          : 'Invalid Email'
                                       : null;
                                 }),
                             Padding(
@@ -201,10 +205,13 @@ class _LoginFormState extends State<LoginForm> {
                                 ),
                                 keyboardType: TextInputType.text,
                                 obscureText: !passwordVisible,
-                                autovalidate: false,
-                                validator: (_) {
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                validator: (v) {
                                   return !state.isPasswordValid
-                                      ? 'Invalid Password'
+                                      ? v.isEmpty
+                                          ? null
+                                          : 'Invalid Password'
                                       : null;
                                 }),
                             Padding(padding: EdgeInsets.all(6)),
@@ -221,7 +228,7 @@ class _LoginFormState extends State<LoginForm> {
                                   padding: EdgeInsets.all(4),
                                 ),
                                 Expanded(
-                                  child: RaisedButton(
+                                  child: ElevatedButton(
                                     child: Text('Daftar'),
                                     onPressed: () {
                                       _pcontrol.nextPage(

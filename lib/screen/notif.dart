@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:aula/repository/firestore.dart';
-import 'package:aula/repository/user_repository.dart';
+// import 'package:aula/repository/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
@@ -28,8 +28,14 @@ class _NotificationCentreState extends State<NotificationCentre>
       }
     };
     print(json);
-    var response = await http.get(
-        'http://newsapi.org/v2/top-headlines?country=id&apiKey=f4d3ea982e5c489e92dbe22359574a35');
+    var uri = Uri.http(
+      'newsapi.org',
+      '/v2/top-headlines',
+      {'country': 'id', 'apiKey': 'f4d3ea982e5c489e92dbe22359574a35'},
+    );
+    var response = await http.get(uri
+        // 'http://newsapi.org/v2/top-headlines?country=id&apiKey=f4d3ea982e5c489e92dbe22359574a35'
+        );
     var data = jsonDecode(response.body);
     return data;
   }
@@ -75,7 +81,7 @@ class _NotificationCentreState extends State<NotificationCentre>
 
   @override
   Widget build(BuildContext context) {
-    var repo = RepositoryProvider.of<FirestoreRepo>(context);
+    // var repo = RepositoryProvider.of<FirestoreRepo>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Notification Centre'),

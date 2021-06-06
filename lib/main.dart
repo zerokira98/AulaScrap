@@ -7,13 +7,15 @@ import 'package:aula/repository/firestore.dart';
 import 'package:aula/repository/user_repository.dart';
 import 'package:aula/screen/home/home_screen.dart';
 import 'package:aula/screen/signinup.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math' as math;
 
-void main() {
+void main()async {
   WidgetsFlutterBinding.ensureInitialized();
+ await Firebase.initializeApp();
   final UserRepository user = UserRepository();
   final FirestoreRepo storage = FirestoreRepo();
   Bloc.observer = SimpleBlocDelegate();
@@ -45,7 +47,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   AnimationController acont;
   @override
   void initState() {
-    acont = AnimationController(vsync: this, duration: Duration(seconds: 2));
+    acont = AnimationController(vsync: this, duration: Duration(seconds: 1));
     super.initState();
   }
 
@@ -119,13 +121,14 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                 var size = MediaQuery.of(context).size;
                 if (state is Authenticated) return HomeScreen();
                 if (state is Unauthenticated) {
-                  return SignInUp(
-                    fromlogout: state.fromLogOut,
+                  return SignInUpHome(
+                    fromLogout: state.fromLogOut,
                   );
                 }
                 if (state is AuthUninitialized) {
                   return Splash(acont: acont, height: size.height);
                 }
+                return CircularProgressIndicator();
               },
             ),
           ),

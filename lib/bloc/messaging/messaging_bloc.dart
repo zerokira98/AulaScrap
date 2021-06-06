@@ -26,7 +26,7 @@ class MessagingBloc extends Bloc<MessagingEvent, MessagingState> {
     MessagingEvent event,
   ) async* {
     if (event is UpdateMessage) {
-      var msg = event.msg.documents.map<Map<dynamic, dynamic>>((e) {
+      var msg = event.msg.docs.map<Map<dynamic, dynamic>>((e) {
         return {
           'content': e['content'],
           'sender': e['sender'],

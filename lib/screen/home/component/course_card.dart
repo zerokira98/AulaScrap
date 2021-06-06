@@ -36,12 +36,12 @@ class CourseCard extends StatelessWidget {
                   margin: EdgeInsets.symmetric(vertical: 8, horizontal: 24),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 2.0,
-                          spreadRadius: 2.0),
-                    ],
+                    // boxShadow: [
+                    //   BoxShadow(
+                    //       color: Colors.black12,
+                    //       blurRadius: 2.0,
+                    //       spreadRadius: 2.0),
+                    // ],
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Column(
@@ -54,27 +54,27 @@ class CourseCard extends StatelessWidget {
                             onPressed: () {
                               showDialog(
                                   context: context,
-                                  child: AlertDialog(
-                                    content: Text(
-                                        'Are you sure to hide/unhide this course?'),
-                                    actions: <Widget>[
-                                      MaterialButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text('Cancel'),
-                                      ),
-                                      MaterialButton(
-                                        onPressed: () {
-                                          context
-                                              .bloc<CardlistBloc>()
-                                              .add(HideCard(index));
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text('Ok'),
-                                      ),
-                                    ],
-                                  ));
+                                  builder: (context) => AlertDialog(
+                                        content: Text(
+                                            'Are you sure to hide/unhide this course?'),
+                                        actions: <Widget>[
+                                          MaterialButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text('Cancel'),
+                                          ),
+                                          MaterialButton(
+                                            onPressed: () {
+                                              context
+                                                  .bloc<CardlistBloc>()
+                                                  .add(HideCard(index));
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text('Ok'),
+                                          ),
+                                        ],
+                                      ));
                             }),
                       ),
                       Material(
@@ -155,11 +155,11 @@ class CourseCard extends StatelessWidget {
                                     'Fisika (S1)',
                                     style: TextStyle(
                                       color: Colors.white,
-                                      shadows: [
-                                        Shadow(
-                                          blurRadius: 8,
-                                        ),
-                                      ],
+                                      // shadows: [
+                                      //   Shadow(
+                                      //     blurRadius: 8,
+                                      //   ),
+                                      // ],
                                     ),
                                   ),
                                 ))

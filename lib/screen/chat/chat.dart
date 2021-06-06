@@ -1,5 +1,5 @@
 // import 'package:animations/animations.dart';
-import 'package:animations/animations.dart';
+// import 'package:animations/animations.dart';
 import 'package:aula/bloc/messaging/messaging_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -260,7 +260,7 @@ class _MessageBoxState extends State<MessageBox> {
       bloc.add(SendMessages(content: messageContentController.text));
       messageContentController.clear();
     } else if (messageContentController.text.isEmpty) {
-      Scaffold.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Empty'),
       ));
     }

@@ -9,10 +9,10 @@ class RegisterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
-      color: Colors.blue,
-      disabledColor: Colors.blueGrey,
-      textColor: Colors.white,
+    return ElevatedButton(
+      // color: Colors.blue,
+      // disabledColor: Colors.blueGrey,
+      // textColor: Colors.white,
       onPressed: _onPressed,
       child: Text('Register'),
     );

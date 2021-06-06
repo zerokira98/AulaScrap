@@ -12,9 +12,7 @@ class _UserDetailsCardState extends State<UserDetailsCard> {
   double pos = 0;
   @override
   void initState() {
-    widget.scont.addListener(() {
-      listen();
-    });
+    widget.scont.addListener(listen);
     super.initState();
   }
 
@@ -24,15 +22,18 @@ class _UserDetailsCardState extends State<UserDetailsCard> {
         pos = -widget.scont.offset / 2.5;
       });
     } else {
-      setState(() {
-        pos = -110;
-      });
+      if (pos != -110) {
+        setState(() {
+          pos = -110;
+        });
+      }
     }
   }
 
   @override
   void dispose() {
     // widget.scont.dispose();
+    widget.scont.removeListener(listen);
     super.dispose();
   }
 
@@ -154,7 +155,7 @@ class _ProfilePictState extends State<ProfilePict> {
     if (pickedFile == null || fileSize >= 2000000) {
       if (fileSize >= 2000000) {
         print(fileSize);
-        Scaffold.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Colors.red,
           content: Text('File is over 2MB, canceled...'),
         ));

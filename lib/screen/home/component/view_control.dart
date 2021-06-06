@@ -14,9 +14,7 @@ class _ViewControlState extends State<ViewControl> {
   var style = TextStyle(fontSize: 12.0);
   @override
   void initState() {
-    this.widget.scont.addListener(() {
-      listen();
-    });
+    this.widget.scont.addListener(listen);
     super.initState();
   }
 
@@ -42,6 +40,7 @@ class _ViewControlState extends State<ViewControl> {
   @override
   void dispose() {
     // this.widget.scont?.dispose();
+    widget.scont.removeListener(listen);
     super.dispose();
   }
 

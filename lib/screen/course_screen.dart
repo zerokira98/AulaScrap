@@ -231,11 +231,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
         BottomNavigationBarItem(
             backgroundColor: Colors.blueGrey[400],
             icon: Icon(Icons.home),
-            title: Text('Hai')),
+            label: ('Hai')),
         BottomNavigationBarItem(
             backgroundColor: Colors.blueGrey[600],
             icon: Icon(Icons.account_box),
-            title: Text('Participant')),
+            label: ('Participant')),
       ],
     );
   }

@@ -33,11 +33,11 @@ class _BottomNavbarState extends State<BottomNavbar> {
         currentIndex: index,
         items: [
           BottomNavigationBarItem(
-              icon: Icon(Icons.details), title: Text('details')),
+              icon: Icon(Icons.details), label: ('details')),
           BottomNavigationBarItem(
-              icon: Icon(Icons.art_track), title: Text('details')),
+              icon: Icon(Icons.art_track), label: ('details')),
           BottomNavigationBarItem(
-              icon: Icon(Icons.playlist_add_check), title: Text('details')),
+              icon: Icon(Icons.playlist_add_check), label: ('details')),
         ]);
   }
 }

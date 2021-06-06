@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen>
             child: FlareActor(
               'res/cloud.flr',
               fit: BoxFit.cover,
-              animation: 'move',
+              animation: rotation == 1 ? 'move' : '',
             ),
             width: double.infinity,
             height: double.infinity,

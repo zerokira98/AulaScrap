@@ -46,7 +46,7 @@ class _RegisterFormState extends State<RegisterForm> {
         var hai = BlocProvider.of<RegisterBloc>(context);
         print(hai);
         if (state.isSubmitting) {
-          Scaffold.of(context)
+          ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
               SnackBar(
@@ -62,7 +62,7 @@ class _RegisterFormState extends State<RegisterForm> {
             );
         }
         if (state.isSuccess) {
-          Scaffold.of(context)
+          ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
               SnackBar(
@@ -78,11 +78,11 @@ class _RegisterFormState extends State<RegisterForm> {
             );
         }
         if (state is Success2) {
-          Scaffold.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
           BlocProvider.of<AuthenticationBloc>(context).add(LoggedIn());
         }
         if (state.isFailure) {
-          Scaffold.of(context)
+          ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
               SnackBar(
@@ -176,7 +176,8 @@ class _RegisterFormState extends State<RegisterForm> {
                               ),
                               keyboardType: TextInputType.text,
                               obscureText: !passwordVisibled,
-                              autovalidate: true,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
                               validator: (_) {
                                 return !state.isPasswordValid
                                     ? 'Invalid Password'
@@ -188,7 +189,8 @@ class _RegisterFormState extends State<RegisterForm> {
                             ),
                             TextFormField(
                               controller: _usernameController,
-                              autovalidate: true,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
                               validator: (_) {
                                 return !state.isUsernameValid
                                     ? 'Username has taken'
@@ -211,7 +213,7 @@ class _RegisterFormState extends State<RegisterForm> {
                                   padding: EdgeInsets.all(4),
                                 ),
                                 Expanded(
-                                  child: RaisedButton(
+                                  child: ElevatedButton(
                                     child: Text('Login'),
                                     onPressed: () {
                                       _controller.previousPage(
