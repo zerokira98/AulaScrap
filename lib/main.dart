@@ -13,9 +13,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math' as math;
 
-void main()async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
- await Firebase.initializeApp();
+  await Firebase.initializeApp();
   final UserRepository user = UserRepository();
   final FirestoreRepo storage = FirestoreRepo();
   Bloc.observer = SimpleBlocDelegate();
@@ -31,7 +31,7 @@ void main()async {
                 AuthenticationBloc(userRepository: user)..add(AppStarted()),
           ),
           BlocProvider(
-            create: (context) => CardlistBloc()..add(LoadData(5)),
+            create: (context) => CardlistBloc()..add(LoadData(8)),
           ),
         ],
         child: MyApp(),

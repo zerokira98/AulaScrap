@@ -117,14 +117,14 @@ class CourseCard extends StatelessWidget {
                                           (index % 2).toString() +
                                           '.png'),
                                       fit: BoxFit.cover),
-                                  gradient: RadialGradient(
-                                    colors: [
-                                      Colors.blue[200],
-                                      Colors.blue[700]
-                                    ],
-                                    center: Alignment(1.0, 1.0),
-                                    radius: 1.8,
-                                  ),
+                                  // gradient: RadialGradient(
+                                  //   colors: [
+                                  //     Colors.blue[200],
+                                  //     Colors.blue[700]
+                                  //   ],
+                                  // center: Alignment(1.0, 1.0),
+                                  // radius: 1.8,
+                                  // ),
                                   borderRadius: BorderRadius.vertical(
                                       top: Radius.circular(16))),
                             ),

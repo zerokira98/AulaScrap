@@ -52,10 +52,10 @@ class _ViewControlState extends State<ViewControl> {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-                offset: Offset(0, 4), blurRadius: 4.0, color: Colors.grey),
-          ],
+          // boxShadow: [
+          //   BoxShadow(
+          //       offset: Offset(0, 4), blurRadius: 4.0, color: Colors.grey),
+          // ],
           color: Colors.white,
         ),
         width: size.width,

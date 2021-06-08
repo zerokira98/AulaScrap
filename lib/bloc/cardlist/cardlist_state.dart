@@ -13,8 +13,22 @@ class Loaded extends CardlistState {
   final double cardSize = 132.0;
   final List<Map> data;
   const Loaded(this.data, this.currentFilter);
-  Loaded changeFilter(int intFilter) {
-    return copy(currentFilter: intFilter);
+  Loaded changeFilter(List<Map> data, int intFilter) {
+    List filtered = [];
+    if (intFilter == 5) {
+      for (var v in data) {
+        if (v['hidden']) {
+          filtered.add(v);
+        }
+      }
+    } else {
+      for (var v in data) {
+        if (!v['hidden']) {
+          filtered.add(v);
+        }
+      }
+    }
+    return copy(data: data, currentFilter: intFilter);
   }
 
   Loaded hideCard(List data) {

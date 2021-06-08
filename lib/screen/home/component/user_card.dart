@@ -48,12 +48,12 @@ class _UserDetailsCardState extends State<UserDetailsCard> {
           child: Container(
             decoration: BoxDecoration(
                 color: Colors.purple,
-                boxShadow: [
-                  BoxShadow(
-                    spreadRadius: 0.0,
-                    blurRadius: 8.0,
-                  )
-                ],
+                // boxShadow: [
+                //   BoxShadow(
+                //     spreadRadius: 0.0,
+                //     blurRadius: 8.0,
+                //   )
+                // ],
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(48),
                     bottomRight: Radius.circular(48))),
@@ -153,6 +153,10 @@ class _ProfilePictState extends State<ProfilePict> {
     // SharedPreferences prefs = await SharedPreferences.getInstance();
     var fileSize = await File(pickedFile.path).length();
     if (pickedFile == null || fileSize >= 2000000) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        // backgroundColor: Colors.red,
+        content: Text('Canceled by user.'),
+      ));
       if (fileSize >= 2000000) {
         print(fileSize);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

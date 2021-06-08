@@ -68,13 +68,13 @@ class _CourseListHomeState extends State<CourseListHome> {
         children: [
           // StackSize(),
           ///List of course card
-          Positioned.directional(
-            textDirection: TextDirection.ltr,
-            top: 0,
+          Positioned.fill(
+            // textDirection: TextDirection.ltr,
+            // top: 0,
             child: Container(
-              padding: EdgeInsets.zero,
-              width: size.width,
-              height: size.height,
+              // padding: EdgeInsets.zero,
+              // width: size.width,
+              // height: size.height,
               child: SingleChildScrollView(
                   controller: scrollController,
                   child: Padding(
@@ -125,46 +125,28 @@ class Grids extends StatelessWidget {
           return CircularProgressIndicator();
         }
         if (state is Loaded) {
-          return Column(
-            children: state.data
-                .asMap()
-                .map((i, e) {
-                  if (state.currentFilter == 5) {
-                    if (state.data[i]['hidden']) {
-                      // return MapEntry(i, Container());
-                    } else {
-                      return MapEntry(i, Container());
-                    }
-                  } else if (state.data[i]['hidden']) {
-                    return MapEntry(i, Container());
-                  }
-
-                  return MapEntry(
-                    i,
-                    GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(CupertinoPageRoute(
-                              builder: (context) => CourseScreen(i)));
-                        },
-                        onLongPress: () {
-                          HapticFeedback.vibrate();
-                          SystemSound.play(SystemSoundType.click);
-                        },
-                        onLongPressUp: () {
-                          _cardbloc.add(OpenCard(i));
-                        },
-                        child: Hero(
-                          tag: 'cbanner$i',
-                          child: CourseCard(
-                            index: i,
-                            openMenu: state.data[i]['close'],
-                          ),
-                        )),
-                  );
-                })
-                .values
-                .toList(),
-          );
+          return Column(children: [
+            for (var i = 0; i < state.data.length; i++)
+              GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(CupertinoPageRoute(
+                        builder: (context) => CourseScreen(i)));
+                  },
+                  onLongPress: () {
+                    HapticFeedback.vibrate();
+                    SystemSound.play(SystemSoundType.click);
+                  },
+                  onLongPressUp: () {
+                    _cardbloc.add(OpenCard(i));
+                  },
+                  child: Hero(
+                    tag: 'cbanner$i',
+                    child: CourseCard(
+                      index: i,
+                      openMenu: state.data[i]['close'],
+                    ),
+                  )),
+          ]);
         }
         return Container();
       },

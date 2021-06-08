@@ -7,6 +7,7 @@ part 'cardlist_event.dart';
 part 'cardlist_state.dart';
 
 class CardlistBloc extends Bloc<CardlistEvent, CardlistState> {
+  List<Map> data = [];
   CardlistBloc() : super(CardlistInitial());
 
   @override
@@ -18,7 +19,6 @@ class CardlistBloc extends Bloc<CardlistEvent, CardlistState> {
     if (state is CardlistInitial) {
       // yield Loading();
       if (event is LoadData) {
-        List<Map> data = [];
         for (var i = 0; i < event.sum; i++) {
           data.add({'close': true, 'hidden': false});
         }
@@ -40,7 +40,8 @@ class CardlistBloc extends Bloc<CardlistEvent, CardlistState> {
 
   Stream<CardlistState> _mapChangeFilter(int ind) async* {
     // yield Loading();
-    yield (state as Loaded).changeFilter(ind);
+    // var cstate = (state as Loaded);
+    yield (state as Loaded).changeFilter(data, ind);
     // yield Loaded((state as Loaded).data, ind);
   }
 
