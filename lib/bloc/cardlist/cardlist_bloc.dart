@@ -42,7 +42,7 @@ class CardlistBloc extends Bloc<CardlistEvent, CardlistState> {
     // yield Loading();
     // var cstate = (state as Loaded);
 
-    List filtered = [];
+    List<Map> filtered = [];
     if (id == 5) {
       for (var v in data) {
         if (v['hidden']) {
@@ -61,7 +61,7 @@ class CardlistBloc extends Bloc<CardlistEvent, CardlistState> {
   }
 
   Stream<CardlistState> _mapCardHide(int id) async* {
-    yield Loading();
+    // yield Loading();
     // List newData = (state as Loaded).data;
     data.forEach((element) {
       if (element['id'] == id) {
