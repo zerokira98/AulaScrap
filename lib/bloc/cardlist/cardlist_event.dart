@@ -15,22 +15,22 @@ class LoadData extends CardlistEvent {
 }
 
 class OpenCard extends CardlistEvent {
-  final int index;
-  OpenCard(this.index);
+  final int id;
+  OpenCard(this.id);
   @override
-  List<Object> get props => [index];
+  List<Object> get props => [id];
 }
 
 class HideCard extends CardlistEvent {
-  final int index;
-  HideCard(this.index);
+  final int id;
+  HideCard(this.id);
   @override
-  List<Object> get props => [index];
+  List<Object> get props => [id];
 }
 
 class ChangeFilter extends CardlistEvent {
-  final int index;
-  ChangeFilter(this.index);
+  final int id;
+  ChangeFilter(this.id);
   @override
-  List<Object> get props => [index];
+  List<Object> get props => [id];
 }

@@ -16,7 +16,7 @@ class _MenuAppBarState extends State<MenuAppBar> {
   void initState() {
     widget.pc.addListener(() {
       var off = widget.pc.offset;
-      if (off <= 88) {
+      if (off <= 88 && off >= 0.0) {
         setState(() {
           opacity = off != 0.0 ? off / 88 : 0.0;
         });

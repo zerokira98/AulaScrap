@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:path_provider/path_provider.dart';
 
 class UserRepository {
   final FirebaseAuth _firebaseAuth;
@@ -76,4 +79,34 @@ class UserRepository {
   Future<String> getUserId() async {
     return (_firebaseAuth.currentUser).uid;
   }
+
+  // Future<File> getppLocal() async {
+  //   var dir = await getApplicationDocumentsDirectory();
+  //   String url = await getUserPpUrl();
+  //   String imagename = url.split('/').last;
+  //   // Uri uri = Uri.parse(url);
+  //   // uri.
+  //   File file = File(dir.path + '/pp/' + imagename);
+  //   if (await file.exists()) {
+  //     return file;
+  //   } else {
+  //     HttpClient httpClient = new HttpClient();
+  //     try {
+  //       // myUrl = url+'/'+imagename;
+  //       var request = await httpClient.getUrl(Uri.parse(url));
+  //       var response = await request.close();
+  //       if (response.statusCode == 200) {
+  //         var bytes = await consolidateHttpClientResponseBytes(response);
+  //         // filePath = '$dir/$fileName';
+  //         // file = File(filePath);
+  //         await file.writeAsBytes(bytes);
+  //       }
+  //     } catch (ex) {
+  //       // filePath = 'Can not fetch url';
+  //     }
+
+  //     // return filePath;
+  //   }
+  //   return file;
+  // }
 }

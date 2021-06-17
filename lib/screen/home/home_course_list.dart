@@ -75,10 +75,52 @@ class _CourseListHomeState extends State<CourseListHome> {
               // padding: EdgeInsets.zero,
               // width: size.width,
               // height: size.height,
-              child: SingleChildScrollView(
-                  controller: scrollController,
-                  child: Padding(
-                      padding: EdgeInsets.only(top: 228), child: Grids())),
+              child: BlocBuilder<CardlistBloc, CardlistState>(
+                builder: (context, state) {
+                  if (state is Loaded) {
+                    return ListView.builder(
+                      padding: EdgeInsets.only(top: 228),
+                      controller: scrollController,
+                      physics: BouncingScrollPhysics(),
+                      itemBuilder: (context, i) {
+                        // if (state.data[i]['hidden']) {
+                        //   if (state.currentFilter == 0) return Container();
+                        //   if (state.currentFilter == 5) {}
+                        // }
+                        return GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(CupertinoPageRoute(
+                                  builder: (context) => CourseScreen(i)));
+                            },
+                            onLongPress: () {
+                              HapticFeedback.vibrate();
+                              SystemSound.play(SystemSoundType.click);
+                            },
+                            onLongPressUp: () {
+                              BlocProvider.of<CardlistBloc>(context)
+                                  .add(OpenCard(i));
+                            },
+                            child: Hero(
+                              tag: 'cbanner$i',
+                              child: CourseCard(
+                                index: i,
+                                openMenu: state.data[i]['close'],
+                              ),
+                            ));
+                      },
+                      itemCount: state.data.length,
+                    );
+                  }
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
+              // SingleChildScrollView(
+              //   controller: scrollController,
+              //   child:
+              //       Padding(padding: EdgeInsets.only(top: 228), child: Grids()),
+              // ),
             ),
           ),
           UserDetailsCard(scont: scrollController),

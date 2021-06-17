@@ -14,20 +14,6 @@ class Loaded extends CardlistState {
   final List<Map> data;
   const Loaded(this.data, this.currentFilter);
   Loaded changeFilter(List<Map> data, int intFilter) {
-    List filtered = [];
-    if (intFilter == 5) {
-      for (var v in data) {
-        if (v['hidden']) {
-          filtered.add(v);
-        }
-      }
-    } else {
-      for (var v in data) {
-        if (!v['hidden']) {
-          filtered.add(v);
-        }
-      }
-    }
     return copy(data: data, currentFilter: intFilter);
   }
 

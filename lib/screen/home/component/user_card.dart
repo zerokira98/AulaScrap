@@ -19,7 +19,7 @@ class _UserDetailsCardState extends State<UserDetailsCard> {
   void listen() {
     if (mounted && widget.scont.offset < 110) {
       setState(() {
-        pos = -widget.scont.offset / 2.5;
+        pos = -widget.scont.offset / 1.4;
       });
     } else {
       if (pos != -110) {
@@ -46,6 +46,7 @@ class _UserDetailsCardState extends State<UserDetailsCard> {
         tag: 'profilecard',
         child: Center(
           child: Container(
+            alignment: Alignment.bottomCenter,
             decoration: BoxDecoration(
                 color: Colors.purple,
                 // boxShadow: [
@@ -57,9 +58,9 @@ class _UserDetailsCardState extends State<UserDetailsCard> {
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(48),
                     bottomRight: Radius.circular(48))),
-            padding: EdgeInsets.fromLTRB(24.0, 68.0, 24.0, 8.0),
+            padding: EdgeInsets.fromLTRB(24.0, 88.0, 24.0, 8.0),
             width: width,
-            height: 160,
+            height: 155,
             child: Row(
               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -224,7 +225,7 @@ class _ProfilePictState extends State<ProfilePict> {
           print('tapped');
           getImage(context);
         },
-        child: FutureBuilder(
+        child: FutureBuilder<String>(
             // stream: null,
             future: context.repository<UserRepository>().getUserPpUrl(),
             builder: (context, snapshot) {
